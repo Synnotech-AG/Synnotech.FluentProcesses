@@ -30,6 +30,10 @@ Synntech.FluentProcesses 0.1.0
     </PropertyGroup>
     
     <ItemGroup>
+        <PackageReference Include="Light.GuardClauses" Version="10.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <None Include="../../synnotech-logo.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
