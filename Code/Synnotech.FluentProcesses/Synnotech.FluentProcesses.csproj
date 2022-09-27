@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>10.0</LangVersion>
+        <Authors>Synnotech AG</Authors>
+        <Company>Synnotech AG</Company>
+        <Copyright>Copyright © Synnotech AG 2021</Copyright>
+        <Version>0.1.0</Version>
+        <Description>A lightweight .NET library that makes using the System.Diagnostics.Process class easy.</Description>
+        <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+        <IsPackable>true</IsPackable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageIcon>synnotech-logo.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/Synnotech-AG/Synnotech.FluentProcesses</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Synnotech-AG/Synnotech.FluentProcesses.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReleaseNotes>
+Synntech.FluentProcesses 0.1.0
+--------------------------------
+            
+- read all docs at: https://github.com/Synnotech-AG/Synnotech.FluentProcesses
+        </PackageReleaseNotes>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="../../synnotech-logo.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+</Project>

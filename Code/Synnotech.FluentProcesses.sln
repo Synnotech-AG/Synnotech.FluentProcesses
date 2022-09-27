@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synnotech.FluentProcesses", "Synnotech.FluentProcesses\Synnotech.FluentProcesses.csproj", "{15417CE0-A5DC-412B-8E5F-0FF9A1CA733A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synnotech.FluentProcesses.Tests", "Synnotech.FluentProcesses.Tests\Synnotech.FluentProcesses.Tests.csproj", "{14F40055-3F57-47FE-B27F-37F9AC94602D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15417CE0-A5DC-412B-8E5F-0FF9A1CA733A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15417CE0-A5DC-412B-8E5F-0FF9A1CA733A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15417CE0-A5DC-412B-8E5F-0FF9A1CA733A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15417CE0-A5DC-412B-8E5F-0FF9A1CA733A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14F40055-3F57-47FE-B27F-37F9AC94602D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14F40055-3F57-47FE-B27F-37F9AC94602D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14F40055-3F57-47FE-B27F-37F9AC94602D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14F40055-3F57-47FE-B27F-37F9AC94602D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
