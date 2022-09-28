@@ -185,6 +185,18 @@ public sealed class ProcessBuilderTests
         process.StartInfo.FileName.Should().BeSameAs(fileName);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("Frederic")]
+    [InlineData("jon.doe@contoso.com")]
+    public void SetUserName(string userName)
+    {
+        using var process = ProcessBuilder.WithUserName(userName)
+                                          .CreateProcess();
+
+        process.StartInfo.UserName.Should().BeSameAs(userName);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
