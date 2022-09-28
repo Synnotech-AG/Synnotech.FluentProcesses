@@ -19,10 +19,9 @@ public sealed class ProcessBuilder
     /// Initializes a new instance of <see cref="ProcessBuilder" />.
     /// </summary>
     /// <param name="processStartInfo">The object that contains all configuration infos about the process</param>
-    public ProcessBuilder(ProcessStartInfo processStartInfo)
-    {
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="processStartInfo" /> is null.</exception>
+    public ProcessBuilder(ProcessStartInfo processStartInfo) =>
         ProcessStartInfo = processStartInfo.MustNotBeNull();
-    }
 
     private ProcessStartInfo ProcessStartInfo { get; }
     private bool WasEnvironmentVariableSet { get; set; }
