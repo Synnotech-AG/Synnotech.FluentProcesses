@@ -30,7 +30,8 @@ Synntech.FluentProcesses 0.1.0
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Light.GuardClauses" Version="10.0.0" />
+        <PackageReference Include="Light.GuardClauses" Version="10.0.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
     </ItemGroup>
     
     <ItemGroup>
