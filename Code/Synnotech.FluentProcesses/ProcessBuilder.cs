@@ -162,6 +162,17 @@ public sealed class ProcessBuilder
         ProcessStartInfo.WindowStyle = windowStyle;
         return this;
     }
+
+    /// <summary>
+    /// When the UseShellExecute property is false, sets the working directory
+    /// for the process to be started. When UseShellExecute is true, gets or sets the directory
+    /// that contains the process to be started.
+    /// </summary>
+    public ProcessBuilder WithWorkingDirectory(string workingDirectory)
+    {
+        ProcessStartInfo.WorkingDirectory = workingDirectory;
+        return this;
+    }
     
     /// <summary>
     /// <para>

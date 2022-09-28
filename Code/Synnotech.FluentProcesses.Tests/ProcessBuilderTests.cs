@@ -211,6 +211,17 @@ public sealed class ProcessBuilderTests
         process.StartInfo.WindowStyle.Should().Be(windowStyle);
     }
 
+    [Theory]
+    [InlineData(@"C:\Temp")]
+    [InlineData("./SomeOtherDirectory")]
+    public void SetWorkingDirectory(string workingDirectory)
+    {
+        using var process = ProcessBuilder.WithWorkingDirectory(workingDirectory)
+                                          .CreateProcess();
+
+        process.StartInfo.WorkingDirectory.Should().BeSameAs(workingDirectory);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
