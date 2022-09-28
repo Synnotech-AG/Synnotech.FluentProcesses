@@ -173,6 +173,18 @@ public sealed class ProcessBuilderTests
         process.StartInfo.ErrorDialog.Should().Be(value);
     }
 
+    [Theory]
+    [InlineData("MyApp.exe")]
+    [InlineData(@"C:\SomeFolder\SomeApp.exe")]
+    [InlineData(@".\MyExcelFile.xlsx")]
+    public void SetFileName(string fileName)
+    {
+        using var process = ProcessBuilder.WithFileName(fileName)
+                                          .CreateProcess();
+
+        process.StartInfo.FileName.Should().BeSameAs(fileName);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {

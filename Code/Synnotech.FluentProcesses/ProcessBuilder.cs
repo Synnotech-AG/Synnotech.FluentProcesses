@@ -127,6 +127,16 @@ public sealed class ProcessBuilder
         ProcessStartInfo.ErrorDialog = showErrorDialog;
         return this;
     }
+
+    /// <summary>
+    /// Sets the application or document to start. This
+    /// value must be set before the process can be started.
+    /// </summary>
+    public ProcessBuilder WithFileName(string fileName)
+    {
+        ProcessStartInfo.FileName = fileName;
+        return this;
+    }
     
     /// <summary>
     /// <para>
