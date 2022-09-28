@@ -152,6 +152,18 @@ public sealed class ProcessBuilderTests
         return secureString;
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("Foo")]
+    [InlineData("bar")]
+    public void SetVerb(string verb)
+    {
+        using var process = ProcessBuilder.WithVerb(verb)
+                                          .CreateProcess();
+
+        process.StartInfo.Verb.Should().BeSameAs(verb);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {

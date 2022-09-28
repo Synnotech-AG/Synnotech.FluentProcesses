@@ -99,6 +99,24 @@ public sealed class ProcessBuilder
         ProcessStartInfo.Password = password;
         return this;
     }
+
+    /// <summary>
+    /// <para>
+    /// Sets the verb to use when opening the application or document.
+    /// The verb identifies the action to take with the file that the process opens.
+    /// The default is an empty string (""), which signifies no action.
+    /// </para>
+    /// <para>
+    /// You can find all associated verbs with a file type by accessing the
+    /// <see cref="System.Diagnostics.ProcessStartInfo.Verbs"/> property after setting the
+    /// <see cref="System.Diagnostics.ProcessStartInfo.FileName" /> property. 
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithVerb(string verb)
+    {
+        ProcessStartInfo.Verb = verb;
+        return this;
+    }
     
     /// <summary>
     /// <para>
