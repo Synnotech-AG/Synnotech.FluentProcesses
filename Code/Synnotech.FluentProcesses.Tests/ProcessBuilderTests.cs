@@ -69,6 +69,33 @@ public sealed class ProcessBuilderTests
         process.StartInfo.Arguments.Should().BeEmpty();
     }
 
+    [Theory]
+    [InlineData("site.contoso.com")]
+    [InlineData("synnotech.de")]
+    public void SetDomain(string domain)
+    {
+        using var process = ProcessBuilder.WithDomain(domain)
+                                          .CreateProcess();
+
+#pragma warning disable CA1416 // The setter can be called although AD domains are only supported on Windows
+        process.StartInfo.Domain.Should().BeSameAs(domain);
+#pragma warning restore CA1416
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void UnsetDomain(string unsetValue)
+    {
+        using var process = ProcessBuilder.WithDomain("Foo")
+                                          .WithDomain(unsetValue)
+                                          .CreateProcess();
+
+#pragma warning disable CA1416 // The setter can be called although AD domains are only supported on Windows
+        process.StartInfo.Domain.Should().BeEmpty();
+#pragma warning restore CA1416
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {

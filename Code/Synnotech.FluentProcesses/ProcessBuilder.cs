@@ -61,6 +61,22 @@ public sealed class ProcessBuilder
 
     /// <summary>
     /// <para>
+    /// Sets a value that identifies the domain to use when starting the process.
+    /// If this value is null, the UserName property must be specified in UPN format.
+    /// </para>
+    /// <para>
+    /// While you can call this method on all platforms, starting the process with
+    /// an AD domain is only supported on Windows platforms.
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithDomain(string? domain)
+    {
+        ProcessStartInfo.Domain = domain;
+        return this;
+    }
+
+    /// <summary>
+    /// <para>
     /// Creates a deep copy of this process builder instance.
     /// </para>
     /// <para>
