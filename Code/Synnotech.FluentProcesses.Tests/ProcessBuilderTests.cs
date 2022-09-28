@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Security;
 using FluentAssertions;
 using Synnotech.Xunit;
@@ -195,6 +196,19 @@ public sealed class ProcessBuilderTests
                                           .CreateProcess();
 
         process.StartInfo.UserName.Should().BeSameAs(userName);
+    }
+
+    [Theory]
+    [InlineData(ProcessWindowStyle.Normal)]
+    [InlineData(ProcessWindowStyle.Hidden)]
+    [InlineData(ProcessWindowStyle.Minimized)]
+    [InlineData(ProcessWindowStyle.Maximized)]
+    public void SetWindowStyle(ProcessWindowStyle windowStyle)
+    {
+        using var process = ProcessBuilder.WithWindowStyle(windowStyle)
+                                          .CreateProcess();
+
+        process.StartInfo.WindowStyle.Should().Be(windowStyle);
     }
 
     public static TheoryData<string?> InvalidStrings { get; } =
