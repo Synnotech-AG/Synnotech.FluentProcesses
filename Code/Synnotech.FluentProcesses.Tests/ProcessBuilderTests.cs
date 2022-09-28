@@ -98,8 +98,7 @@ public sealed class ProcessBuilderTests
     }
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
+    [MemberData(nameof(BooleanValues))]
     public void SetCreateNoWindow(bool value)
     {
         using var process = ProcessBuilder.WithCreateNoWindow(value)
@@ -164,6 +163,16 @@ public sealed class ProcessBuilderTests
         process.StartInfo.Verb.Should().BeSameAs(verb);
     }
 
+    [Theory]
+    [MemberData(nameof(BooleanValues))]
+    public void SetErrorDialog(bool value)
+    {
+        using var process = ProcessBuilder.WithErrorDialog(value)
+                                          .CreateProcess();
+
+        process.StartInfo.ErrorDialog.Should().Be(value);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
@@ -171,4 +180,7 @@ public sealed class ProcessBuilderTests
             string.Empty,
             "\t"
         };
+
+    public static TheoryData<bool> BooleanValues { get; } =
+        new () { true, false };
 }
