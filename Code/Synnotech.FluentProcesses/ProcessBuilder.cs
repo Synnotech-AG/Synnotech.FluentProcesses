@@ -51,6 +51,15 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Sets the set of command-line arguments to use when starting the application.
+    /// </summary>
+    public ProcessBuilder WithArguments(string arguments)
+    {
+        ProcessStartInfo.Arguments = arguments;
+        return this;
+    }
+
+    /// <summary>
     /// <para>
     /// Creates a deep copy of this process builder instance.
     /// </para>
