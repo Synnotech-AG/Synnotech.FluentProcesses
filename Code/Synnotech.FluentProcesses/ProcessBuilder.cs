@@ -76,6 +76,16 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Sets a value indicating whether to start the process in a new window. Use
+    /// true if the process should be started without creating a new window to contain it.
+    /// </summary>
+    public ProcessBuilder WithCreateNoWindow(bool createNoWindow = true)
+    {
+        ProcessStartInfo.CreateNoWindow = createNoWindow;
+        return this;
+    }
+    
+    /// <summary>
     /// <para>
     /// Creates a deep copy of this process builder instance.
     /// </para>

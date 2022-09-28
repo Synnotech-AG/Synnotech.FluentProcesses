@@ -96,6 +96,17 @@ public sealed class ProcessBuilderTests
 #pragma warning restore CA1416
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void SetCreateNoWindow(bool value)
+    {
+        using var process = ProcessBuilder.WithCreateNoWindow(value)
+                                          .CreateProcess();
+
+        process.StartInfo.CreateNoWindow.Should().Be(value);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
