@@ -21,8 +21,8 @@ public sealed class ProcessBuilderTests
     [InlineData("baz", "qux")]
     public void AddEnvironmentVariable(string name, string value)
     {
-        var process = ProcessBuilder.AddEnvironmentVariable(name, value)
-                                    .CreateProcess();
+        using var process = ProcessBuilder.AddEnvironmentVariable(name, value)
+                                          .CreateProcess();
 
         process.StartInfo.Environment.Should().Contain(name, value);
     }
@@ -32,7 +32,7 @@ public sealed class ProcessBuilderTests
     public void AddEnvironmentVariableInvalidName(string invalidName)
     {
         var act = () => ProcessBuilder.AddEnvironmentVariable(invalidName, "Foo");
-        
+
         act.Should().Throw<ArgumentException>()
            .Which.ShouldBeWrittenTo(Output);
     }
@@ -42,9 +42,31 @@ public sealed class ProcessBuilderTests
     public void AddEnvironmentVariableInvalidValue(string invalidValue)
     {
         var act = () => ProcessBuilder.AddEnvironmentVariable("Foo", invalidValue);
-        
+
         act.Should().Throw<ArgumentException>()
            .Which.ShouldBeWrittenTo(Output);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("--all")]
+    [InlineData("/p:Configuration=Release /t:clean;restore;build")]
+    public void SetArguments(string arguments)
+    {
+        using var process = ProcessBuilder.WithArguments(arguments)
+                                          .CreateProcess();
+
+        process.StartInfo.Arguments.Should().BeSameAs(arguments);
+    }
+
+    [Fact]
+    public void UnsetArguments()
+    {
+        using var process = ProcessBuilder.WithArguments("--all")
+                                          .WithArguments(string.Empty)
+                                          .CreateProcess();
+
+        process.StartInfo.Arguments.Should().BeEmpty();
     }
 
     public static TheoryData<string?> InvalidStrings { get; } =
