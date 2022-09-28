@@ -153,6 +153,15 @@ public sealed class ProcessBuilder
         ProcessStartInfo.UserName = userName;
         return this;
     }
+
+    /// <summary>
+    /// Sets the window state to use when the process is started.
+    /// </summary>
+    public ProcessBuilder WithWindowStyle(ProcessWindowStyle windowStyle)
+    {
+        ProcessStartInfo.WindowStyle = windowStyle;
+        return this;
+    }
     
     /// <summary>
     /// <para>
