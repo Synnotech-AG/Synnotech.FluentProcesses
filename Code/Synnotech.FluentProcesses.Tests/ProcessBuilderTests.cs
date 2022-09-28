@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using FluentAssertions;
 using Synnotech.Xunit;
 using Xunit;
@@ -105,6 +106,50 @@ public sealed class ProcessBuilderTests
                                           .CreateProcess();
 
         process.StartInfo.CreateNoWindow.Should().Be(value);
+    }
+
+    [SkippableFact]
+    public void SetPassword()
+    {
+        Skip.IfNot(OperatingSystem.IsWindows());
+        
+        var secureString = CreateSecureString();
+        
+        using var process = ProcessBuilder.WithPassword(secureString)
+                                          .CreateProcess();
+
+#pragma warning disable CA1416 // The setter can be called although user and password for processes only work on Windows
+        process.StartInfo.Password.Should().BeSameAs(secureString);
+#pragma warning restore CA1416
+    }
+
+    [SkippableFact]
+    public void UnsetPassword()
+    {
+        Skip.IfNot(OperatingSystem.IsWindows());
+        
+        var secureString = CreateSecureString();
+
+        using var process = ProcessBuilder.WithPassword(secureString)
+                                          .WithPassword(null)
+                                          .CreateProcess();
+        
+#pragma warning disable CA1416 // The setter can be called although user and password for processes only work on Windows
+        process.StartInfo.Password.Should().BeNull();
+#pragma warning restore CA1416
+    }
+
+    private static SecureString CreateSecureString()
+    {
+        var secureString = new SecureString();
+        secureString.AppendChar('s');
+        secureString.AppendChar('e');
+        secureString.AppendChar('c');
+        secureString.AppendChar('r');
+        secureString.AppendChar('e');
+        secureString.AppendChar('t');
+        secureString.MakeReadOnly();
+        return secureString;
     }
 
     public static TheoryData<string?> InvalidStrings { get; } =

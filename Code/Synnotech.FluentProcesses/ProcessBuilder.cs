@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Security;
 using Light.GuardClauses;
 
 namespace Synnotech.FluentProcesses;
@@ -82,6 +83,20 @@ public sealed class ProcessBuilder
     public ProcessBuilder WithCreateNoWindow(bool createNoWindow = true)
     {
         ProcessStartInfo.CreateNoWindow = createNoWindow;
+        return this;
+    }
+
+    /// <summary>
+    /// <para>
+    /// Sets a secure string that contains the user password to use when starting the process.
+    /// </para>
+    /// <para>
+    /// Secure strings can only be created on Windows platforms. 
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithPassword(SecureString? password)
+    {
+        ProcessStartInfo.Password = password;
         return this;
     }
     
