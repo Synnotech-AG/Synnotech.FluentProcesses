@@ -137,6 +137,22 @@ public sealed class ProcessBuilder
         ProcessStartInfo.FileName = fileName;
         return this;
     }
+
+    /// <summary>
+    /// <para>
+    /// Sets the user name to use when starting the process. If you use the UPN format (user@DNS_domain_name),
+    /// the Domain property must be null.
+    /// </para>
+    /// <para>
+    /// While you can call this method on all platforms, starting the process with
+    /// user name and password is only supported on Windows platforms.
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithUserName(string userName)
+    {
+        ProcessStartInfo.UserName = userName;
+        return this;
+    }
     
     /// <summary>
     /// <para>
