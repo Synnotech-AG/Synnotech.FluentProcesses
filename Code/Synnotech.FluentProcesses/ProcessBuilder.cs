@@ -117,6 +117,16 @@ public sealed class ProcessBuilder
         ProcessStartInfo.Verb = verb;
         return this;
     }
+
+    /// <summary>
+    /// Sets a value indicating whether an error dialog box is displayed to the
+    /// user if the process cannot be started.
+    /// </summary>
+    public ProcessBuilder WithErrorDialog(bool showErrorDialog = true)
+    {
+        ProcessStartInfo.ErrorDialog = showErrorDialog;
+        return this;
+    }
     
     /// <summary>
     /// <para>
