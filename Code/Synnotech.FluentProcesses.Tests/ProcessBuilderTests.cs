@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Security;
+using System.Text;
 using FluentAssertions;
 using Synnotech.Xunit;
 using Xunit;
@@ -264,6 +265,16 @@ public sealed class ProcessBuilderTests
         process.StartInfo.RedirectStandardOutput.Should().Be(value);
     }
 
+    [Theory]
+    [MemberData(nameof(Encodings))]
+    public void SetStandardErrorEncoding(Encoding? encoding)
+    {
+        using var process = ProcessBuilder.WithStandardErrorEncoding(encoding)
+                                          .CreateProcess();
+
+        process.StartInfo.StandardErrorEncoding.Should().BeSameAs(encoding);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
@@ -274,4 +285,7 @@ public sealed class ProcessBuilderTests
 
     public static TheoryData<bool> BooleanValues { get; } =
         new () { true, false };
+    
+    public static TheoryData<Encoding?> Encodings { get; } =
+        new () { Encoding.UTF8, Encoding.Unicode, Encoding.Latin1, null };
 }
