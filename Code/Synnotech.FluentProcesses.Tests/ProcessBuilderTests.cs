@@ -326,6 +326,19 @@ public sealed class ProcessBuilderTests
         process.StartInfo.ErrorDialogParentHandle.Should().Be(handle);
     }
 
+    [Theory]
+    [InlineData("secret")]
+    [InlineData("This password is really safe")]
+    public void SetPasswordInClearText(string password)
+    {
+        using var process = ProcessBuilder.WithPasswordInClearText(password)
+                                          .CreateProcess();
+
+#pragma warning disable CA1416 // The setter can be called although user and password for processes only work on Windows
+        process.StartInfo.PasswordInClearText.Should().BeSameAs(password);
+#pragma warning restore CA1416
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {

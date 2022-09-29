@@ -283,6 +283,21 @@ public sealed class ProcessBuilder
 
     /// <summary>
     /// <para>
+    /// Sets the user password in clear text to use when starting the process.
+    /// </para>
+    /// <para>
+    /// While you can call this method on all platforms, starting the process with
+    /// user name and password is only supported on Windows platforms.
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithPasswordInClearText(string password)
+    {
+        ProcessStartInfo.PasswordInClearText = password;
+        return this;
+    }
+
+    /// <summary>
+    /// <para>
     /// Creates a deep copy of this process builder instance.
     /// </para>
     /// <para>
