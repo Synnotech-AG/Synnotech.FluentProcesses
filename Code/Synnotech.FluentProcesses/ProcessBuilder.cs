@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Security;
+using System.Text;
 using Light.GuardClauses;
 
 namespace Synnotech.FluentProcesses;
@@ -216,6 +217,15 @@ public sealed class ProcessBuilder
     public ProcessBuilder WithRedirectStandardOutput(bool redirectStandardOutput = true)
     {
         ProcessStartInfo.RedirectStandardOutput = redirectStandardOutput;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the preferred encoding for error output.
+    /// </summary>
+    public ProcessBuilder WithStandardErrorEncoding(Encoding? errorEncoding)
+    {
+        ProcessStartInfo.StandardErrorEncoding = errorEncoding;
         return this;
     }
 
