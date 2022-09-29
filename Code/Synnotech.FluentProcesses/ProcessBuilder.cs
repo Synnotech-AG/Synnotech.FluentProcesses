@@ -191,11 +191,21 @@ public sealed class ProcessBuilder
 
     /// <summary>
     /// Sets a value that indicates whether the error output of an application is
-    /// redirected to the process stream or written to the StandardError stream.  
+    /// redirected to the corresponding process stream or written to the StandardError stream.  
     /// </summary>
     public ProcessBuilder WithRedirectStandardError(bool redirectStandardError = true)
     {
         ProcessStartInfo.RedirectStandardError = redirectStandardError;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a value indicating whether the input for an application is redirected to
+    /// the corresponding process stream or read from the StandardInput stream.
+    /// </summary>
+    public ProcessBuilder WithRedirectStandardInput(bool redirectStandardInput = true)
+    {
+        ProcessStartInfo.RedirectStandardInput = redirectStandardInput;
         return this;
     }
     
