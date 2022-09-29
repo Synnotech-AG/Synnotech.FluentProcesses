@@ -274,6 +274,16 @@ public sealed class ProcessBuilderTests
 
         process.StartInfo.StandardErrorEncoding.Should().BeSameAs(encoding);
     }
+    
+    [Theory]
+    [MemberData(nameof(Encodings))]
+    public void SetStandardOutputEncoding(Encoding? encoding)
+    {
+        using var process = ProcessBuilder.WithStandardOutputEncoding(encoding)
+                                          .CreateProcess();
+
+        process.StartInfo.StandardOutputEncoding.Should().BeSameAs(encoding);
+    }
 
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()

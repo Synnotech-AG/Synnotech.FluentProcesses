@@ -44,6 +44,7 @@
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/SIMPLE_EMBEDDED_BLOCK_STYLE/@EntryValue">DO_NOT_CHANGE</s:String>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/SPACE_AFTER_TYPECAST_PARENTHESES/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/SPACE_BEFORE_NEW_PARENTHESES/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/USE_CONTINUOUS_INDENT_INSIDE_INITIALIZER_BRACES/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/USE_CONTINUOUS_INDENT_INSIDE_PARENS/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_BEFORE_TERNARY_OPSIGNS/@EntryValue">False</s:Boolean>
 	<s:Int64 x:Key="/Default/CodeStyle/CodeFormatting/CSharpFormat/WRAP_LIMIT/@EntryValue">500</s:Int64>
@@ -105,7 +106,7 @@
       &lt;/Entry.Match&gt;&#xD;
     &lt;/Entry&gt;&#xD;
     &lt;Entry DisplayName="All other members" /&gt;&#xD;
-    &lt;Entry Priority="100" DisplayName="Test Methods"&gt;&#xD;
+    &lt;Entry DisplayName="Test Methods" Priority="100"&gt;&#xD;
       &lt;Entry.Match&gt;&#xD;
         &lt;And&gt;&#xD;
           &lt;Kind Is="Method" /&gt;&#xD;
@@ -118,7 +119,7 @@
     &lt;/Entry&gt;&#xD;
   &lt;/TypePattern&gt;&#xD;
   &lt;TypePattern DisplayName="Default Pattern"&gt;&#xD;
-    &lt;Entry Priority="100" DisplayName="Public Delegates"&gt;&#xD;
+    &lt;Entry DisplayName="Public Delegates" Priority="100"&gt;&#xD;
       &lt;Entry.Match&gt;&#xD;
         &lt;And&gt;&#xD;
           &lt;Access Is="Public" /&gt;&#xD;
@@ -129,7 +130,7 @@
         &lt;Name /&gt;&#xD;
       &lt;/Entry.SortBy&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &lt;Entry Priority="100" DisplayName="Public Enums"&gt;&#xD;
+    &lt;Entry DisplayName="Public Enums" Priority="100"&gt;&#xD;
       &lt;Entry.Match&gt;&#xD;
         &lt;And&gt;&#xD;
           &lt;Access Is="Public" /&gt;&#xD;
@@ -184,7 +185,7 @@
         &lt;/Or&gt;&#xD;
       &lt;/Entry.Match&gt;&#xD;
     &lt;/Entry&gt;&#xD;
-    &lt;Entry Priority="100" DisplayName="Interface Implementations"&gt;&#xD;
+    &lt;Entry DisplayName="Interface Implementations" Priority="100"&gt;&#xD;
       &lt;Entry.Match&gt;&#xD;
         &lt;And&gt;&#xD;
           &lt;Kind Is="Member" /&gt;&#xD;
@@ -225,5 +226,12 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=NAMESPACE_005FALIAS/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=XAML_005FFIELD/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=XAML_005FRESOURCE/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpKeepExistingMigration/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpPlaceEmbeddedOnSameLineMigration/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ECSharpUseContinuousIndentInsideBracesMigration/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EAlwaysTreatStructAsNotReorderableMigration/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002ECSharp_002ECodeStyle_002ESettingsUpgrade_002EMigrateBlankLinesAroundFieldToBlankLinesAroundProperty/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002EVB_002ECodeStyle_002ESettingsUpgrade_002EVBSpaceAfterUnaryMigration/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/Environment/SettingsMigration/IsMigratorApplied/=JetBrains_002EReSharper_002EPsi_002EXml_002ECodeStyle_002EFormatSettingsUpgrade_002EXmlMoveToCommonFormatterSettingsUpgrade/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=contoso/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Synnotech/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

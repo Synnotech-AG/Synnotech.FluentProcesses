@@ -228,6 +228,15 @@ public sealed class ProcessBuilder
         ProcessStartInfo.StandardErrorEncoding = errorEncoding;
         return this;
     }
+    
+    /// <summary>
+    /// Sets the preferred encoding for standard output.
+    /// </summary>
+    public ProcessBuilder WithStandardOutputEncoding(Encoding? standardOutputEncoding)
+    {
+        ProcessStartInfo.StandardOutputEncoding = standardOutputEncoding;
+        return this;
+    }
 
     /// <summary>
     /// <para>
