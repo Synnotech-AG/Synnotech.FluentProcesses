@@ -272,6 +272,16 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Sets the window handle to use when an error dialog box is
+    /// shown for a process that cannot be started.
+    /// </summary>
+    public ProcessBuilder WithErrorDialogParentHandle(IntPtr parentWindowHandle)
+    {
+        ProcessStartInfo.ErrorDialogParentHandle = parentWindowHandle;
+        return this;
+    }
+
+    /// <summary>
     /// <para>
     /// Creates a deep copy of this process builder instance.
     /// </para>
