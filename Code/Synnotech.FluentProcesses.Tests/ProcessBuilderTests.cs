@@ -306,6 +306,15 @@ public sealed class ProcessBuilderTests
         process.StartInfo.UseShellExecute.Should().Be(value);
     }
 
+    [Fact]
+    public void DisableShellExecute()
+    {
+        using var process = ProcessBuilder.DisableShellExecute()
+                                          .CreateProcess();
+
+        process.StartInfo.UseShellExecute.Should().BeFalse();
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
