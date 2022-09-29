@@ -315,6 +315,17 @@ public sealed class ProcessBuilderTests
         process.StartInfo.UseShellExecute.Should().BeFalse();
     }
 
+    [Fact]
+    public void SetErrorDialogParentHandle()
+    {
+        var handle = new IntPtr(3);
+        using var process = ProcessBuilder.WithErrorDialogParentHandle(handle)
+                                          .CreateProcess();
+        
+        // ReSharper disable once HeapView.BoxingAllocation -- this is only a test, not production code
+        process.StartInfo.ErrorDialogParentHandle.Should().Be(handle);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
