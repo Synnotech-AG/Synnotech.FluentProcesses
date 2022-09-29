@@ -113,9 +113,9 @@ public sealed class ProcessBuilderTests
     public void SetPassword()
     {
         Skip.IfNot(OperatingSystem.IsWindows());
-        
+
         var secureString = CreateSecureString();
-        
+
         using var process = ProcessBuilder.WithPassword(secureString)
                                           .CreateProcess();
 
@@ -128,13 +128,13 @@ public sealed class ProcessBuilderTests
     public void UnsetPassword()
     {
         Skip.IfNot(OperatingSystem.IsWindows());
-        
+
         var secureString = CreateSecureString();
 
         using var process = ProcessBuilder.WithPassword(secureString)
                                           .WithPassword(null)
                                           .CreateProcess();
-        
+
 #pragma warning disable CA1416 // The setter can be called although user and password for processes only work on Windows
         process.StartInfo.Password.Should().BeNull();
 #pragma warning restore CA1416
@@ -244,7 +244,7 @@ public sealed class ProcessBuilderTests
 
         process.StartInfo.RedirectStandardError.Should().Be(value);
     }
-    
+
     [Theory]
     [MemberData(nameof(BooleanValues))]
     public void SetRedirectStandardInput(bool value)
@@ -254,7 +254,7 @@ public sealed class ProcessBuilderTests
 
         process.StartInfo.RedirectStandardInput.Should().Be(value);
     }
-    
+
     [Theory]
     [MemberData(nameof(BooleanValues))]
     public void SetRedirectStandardOutput(bool value)
@@ -274,7 +274,7 @@ public sealed class ProcessBuilderTests
 
         process.StartInfo.StandardErrorEncoding.Should().BeSameAs(encoding);
     }
-    
+
     [Theory]
     [MemberData(nameof(Encodings))]
     public void SetStandardOutputEncoding(Encoding? encoding)
@@ -295,7 +295,7 @@ public sealed class ProcessBuilderTests
         process.StartInfo.StandardOutputEncoding.Should().BeSameAs(encoding);
         process.StartInfo.StandardErrorEncoding.Should().BeSameAs(encoding);
     }
-    
+
     [Theory]
     [MemberData(nameof(BooleanValues))]
     public void SetUseShellExecute(bool value)
@@ -321,7 +321,7 @@ public sealed class ProcessBuilderTests
         var handle = new IntPtr(3);
         using var process = ProcessBuilder.WithErrorDialogParentHandle(handle)
                                           .CreateProcess();
-        
+
         // ReSharper disable once HeapView.BoxingAllocation -- this is only a test, not production code
         process.StartInfo.ErrorDialogParentHandle.Should().Be(handle);
     }
@@ -339,6 +339,23 @@ public sealed class ProcessBuilderTests
 #pragma warning restore CA1416
     }
 
+    [Fact]
+    public void CloneBuilder()
+    {
+        var builderClone = ProcessBuilder.WithFileName("SomeApp.exe")
+                                         .WithArguments("--encryptEverything")
+                                         .DisableShellExecute()
+                                         .WithCreateNoWindow()
+                                         .WithEncoding(Encoding.UTF8)
+                                         .Clone();
+
+        using var process1 = ProcessBuilder.CreateProcess();
+        using var process2 = builderClone.CreateProcess();
+
+        process1.StartInfo.Should().NotBeSameAs(process2.StartInfo);
+        process1.StartInfo.Should().BeEquivalentTo(process2.StartInfo);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
@@ -349,7 +366,7 @@ public sealed class ProcessBuilderTests
 
     public static TheoryData<bool> BooleanValues { get; } =
         new () { true, false };
-    
+
     public static TheoryData<Encoding?> Encodings { get; } =
         new () { Encoding.UTF8, Encoding.Unicode, Encoding.Latin1, null };
 }
