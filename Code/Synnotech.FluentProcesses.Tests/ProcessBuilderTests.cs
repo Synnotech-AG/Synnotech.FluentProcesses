@@ -253,6 +253,16 @@ public sealed class ProcessBuilderTests
 
         process.StartInfo.RedirectStandardInput.Should().Be(value);
     }
+    
+    [Theory]
+    [MemberData(nameof(BooleanValues))]
+    public void SetRedirectStandardOutput(bool value)
+    {
+        using var process = ProcessBuilder.WithRedirectStandardOutput(value)
+                                          .CreateProcess();
+
+        process.StartInfo.RedirectStandardOutput.Should().Be(value);
+    }
 
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()

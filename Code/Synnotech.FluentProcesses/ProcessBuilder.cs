@@ -91,7 +91,7 @@ public sealed class ProcessBuilder
     /// Sets a secure string that contains the user password to use when starting the process.
     /// </para>
     /// <para>
-    /// Secure strings can only be created on Windows platforms. 
+    /// Secure strings can only be created on Windows platforms.
     /// </para>
     /// </summary>
     public ProcessBuilder WithPassword(SecureString? password)
@@ -108,8 +108,8 @@ public sealed class ProcessBuilder
     /// </para>
     /// <para>
     /// You can find all associated verbs with a file type by accessing the
-    /// <see cref="System.Diagnostics.ProcessStartInfo.Verbs"/> property after setting the
-    /// <see cref="System.Diagnostics.ProcessStartInfo.FileName" /> property. 
+    /// <see cref="System.Diagnostics.ProcessStartInfo.Verbs" /> property after setting the
+    /// <see cref="System.Diagnostics.ProcessStartInfo.FileName" /> property.
     /// </para>
     /// </summary>
     public ProcessBuilder WithVerb(string verb)
@@ -190,8 +190,8 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
-    /// Sets a value that indicates whether the error output of an application is
-    /// redirected to the corresponding process stream or written to the StandardError stream.  
+    /// Sets a value indicating whether the error output of an application is
+    /// written to the <see cref="Process.StandardError" /> stream.
     /// </summary>
     public ProcessBuilder WithRedirectStandardError(bool redirectStandardError = true)
     {
@@ -200,15 +200,25 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
-    /// Sets a value indicating whether the input for an application is redirected to
-    /// the corresponding process stream or read from the StandardInput stream.
+    /// Sets a value indicating whether the input for an application is written
+    /// to the <see cref="Process.StandardInput" /> stream.
     /// </summary>
     public ProcessBuilder WithRedirectStandardInput(bool redirectStandardInput = true)
     {
         ProcessStartInfo.RedirectStandardInput = redirectStandardInput;
         return this;
     }
-    
+
+    /// <summary>
+    /// Sets a value that indicates whether the textual output of an application
+    /// is written to the <see cref="Process.StandardOutput" /> stream.
+    /// </summary>
+    public ProcessBuilder WithRedirectStandardOutput(bool redirectStandardOutput = true)
+    {
+        ProcessStartInfo.RedirectStandardOutput = redirectStandardOutput;
+        return this;
+    }
+
     /// <summary>
     /// <para>
     /// Creates a deep copy of this process builder instance.
