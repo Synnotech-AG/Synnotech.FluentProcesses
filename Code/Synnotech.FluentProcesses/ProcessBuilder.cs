@@ -239,6 +239,17 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Sets the preferred encoding for both the standard output
+    /// and error output. 
+    /// </summary>
+    public ProcessBuilder WithEncoding(Encoding? encoding)
+    {
+        WithStandardOutputEncoding(encoding);
+        WithStandardErrorEncoding(encoding);
+        return this;
+    }
+
+    /// <summary>
     /// <para>
     /// Creates a deep copy of this process builder instance.
     /// </para>
