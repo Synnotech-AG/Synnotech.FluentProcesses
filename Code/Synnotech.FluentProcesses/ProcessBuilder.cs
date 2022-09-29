@@ -173,6 +173,21 @@ public sealed class ProcessBuilder
         ProcessStartInfo.WorkingDirectory = workingDirectory;
         return this;
     }
+
+    /// <summary>
+    /// <para>
+    /// Sets a value that indicates whether the Windows user profile is to be loaded from the registry.
+    /// </para>
+    /// <para>
+    /// While you can call this method on all platforms, starting the process with
+    /// this feature enabled will only work on Windows platforms.
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithLoadUserProfile(bool loadUserProfile = true)
+    {
+        ProcessStartInfo.LoadUserProfile = loadUserProfile;
+        return this;
+    }
     
     /// <summary>
     /// <para>

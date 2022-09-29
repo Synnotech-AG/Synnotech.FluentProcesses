@@ -222,6 +222,18 @@ public sealed class ProcessBuilderTests
         process.StartInfo.WorkingDirectory.Should().BeSameAs(workingDirectory);
     }
 
+    [Theory]
+    [MemberData(nameof(BooleanValues))]
+    public void SetLoadUserProfile(bool value)
+    {
+        using var process = ProcessBuilder.WithLoadUserProfile(value)
+                                          .CreateProcess();
+
+#pragma warning disable CA1416 // The setter can be called although Load User Profile only works on Windows
+        process.StartInfo.LoadUserProfile.Should().Be(value);
+#pragma warning restore CA1416
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {
