@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Security;
 using System.Text;
 using Light.GuardClauses;
+using Microsoft.Extensions.Logging;
 
 namespace Synnotech.FluentProcesses;
 
@@ -27,6 +28,7 @@ public sealed class ProcessBuilder
 
     private ProcessStartInfo ProcessStartInfo { get; }
     private bool WasEnvironmentVariableSet { get; set; }
+    private LoggingSettings LoggingSettings { get; set; }
 
     /// <summary>
     /// Adds a custom environment variable that the process can access when executed.
@@ -228,7 +230,7 @@ public sealed class ProcessBuilder
         ProcessStartInfo.StandardErrorEncoding = errorEncoding;
         return this;
     }
-    
+
     /// <summary>
     /// Sets the preferred encoding for standard output.
     /// </summary>
@@ -240,7 +242,7 @@ public sealed class ProcessBuilder
 
     /// <summary>
     /// Sets the preferred encoding for both the standard output
-    /// and error output. 
+    /// and error output.
     /// </summary>
     public ProcessBuilder WithEncoding(Encoding? encoding)
     {
@@ -313,12 +315,49 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Registers the specified logger for potential usage with <see cref="Process.StandardOutput" />
+    /// and <see cref="Process.StandardError" />. BEWARE: calling only this method is not enough,
+    /// you must also call at least one of the <see cref="WithStandardOutputLogging" /> or
+    /// <see cref="WithStandardErrorLogging" /> methods. See their XML comments for details.
+    /// </summary>
+    public ProcessBuilder WithLogger(ILogger? logger)
+    {
+        LoggingSettings = LoggingSettings with { Logger = logger };
+        return this;
+    }
+
+    /// <summary>
+    /// <para>
+    /// Enables or disables logging of the <see cref="Process.StandardOutput" /> stream.
+    /// BEWARE: calling this method alone is not enough, you must specify the logger
+    /// with the <see cref="WithLogger" /> method.
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithStandardOutputLogging(LoggingBehavior standardOutputLoggingBehavior = LoggingBehavior.LogOnEvent)
+    {
+        LoggingSettings = LoggingSettings with { StandardOutputLoggingBehavior = standardOutputLoggingBehavior };
+        return this;
+    }
+
+    /// <summary>
+    /// <para>
+    /// Enables or disables logging of the <see cref="Process.StandardError" /> stream.
+    /// BEWARE: calling this method alone is not enough, you must specify the logger
+    /// with the <see cref="WithLogger" /> method.
+    /// </para>
+    /// </summary>
+    public ProcessBuilder WithStandardErrorLogging(LoggingBehavior standardErrorLoggingBehavior = LoggingBehavior.LogOnEvent)
+    {
+        LoggingSettings = LoggingSettings with { StandardErrorLoggingBehavior = standardErrorLoggingBehavior };
+        return this;
+    }
+
+    /// <summary>
     /// Creates the process instance using all information gathered by this builder instance.
     /// </summary>
     public Process CreateProcess()
     {
         var process = new Process { StartInfo = ProcessStartInfo };
-        // TODO: we need to set additional stuff here
-        return process;
+        return process.EnableLoggingIfNecessary(LoggingSettings);
     }
 }
