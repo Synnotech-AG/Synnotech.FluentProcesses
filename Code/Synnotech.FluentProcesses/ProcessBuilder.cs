@@ -250,6 +250,17 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Sets a value indicating whether to use the operating system shell to start the process.
+    /// By default, <see cref="System.Diagnostics.ProcessStartInfo.UseShellExecute" /> is
+    /// set to true, so you would typically pass false to this method. 
+    /// </summary>
+    public ProcessBuilder WithUseShellExecute(bool useShellExecute)
+    {
+        ProcessStartInfo.UseShellExecute = useShellExecute;
+        return this;
+    }
+
+    /// <summary>
     /// <para>
     /// Creates a deep copy of this process builder instance.
     /// </para>
