@@ -295,6 +295,16 @@ public sealed class ProcessBuilderTests
         process.StartInfo.StandardOutputEncoding.Should().BeSameAs(encoding);
         process.StartInfo.StandardErrorEncoding.Should().BeSameAs(encoding);
     }
+    
+    [Theory]
+    [MemberData(nameof(BooleanValues))]
+    public void SetUseShellExecute(bool value)
+    {
+        using var process = ProcessBuilder.WithUseShellExecute(value)
+                                          .CreateProcess();
+
+        process.StartInfo.UseShellExecute.Should().Be(value);
+    }
 
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
