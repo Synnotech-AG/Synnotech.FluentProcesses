@@ -234,6 +234,16 @@ public sealed class ProcessBuilderTests
 #pragma warning restore CA1416
     }
 
+    [Theory]
+    [MemberData(nameof(BooleanValues))]
+    public void SetRedirectStandardError(bool value)
+    {
+        using var process = ProcessBuilder.WithRedirectStandardError(value)
+                                          .CreateProcess();
+
+        process.StartInfo.RedirectStandardError.Should().Be(value);
+    }
+
     public static TheoryData<string?> InvalidStrings { get; } =
         new ()
         {

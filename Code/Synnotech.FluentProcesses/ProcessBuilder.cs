@@ -188,6 +188,16 @@ public sealed class ProcessBuilder
         ProcessStartInfo.LoadUserProfile = loadUserProfile;
         return this;
     }
+
+    /// <summary>
+    /// Sets a value that indicates whether the error output of an application is
+    /// redirected to the process stream or written to the StandardError stream.  
+    /// </summary>
+    public ProcessBuilder WithRedirectStandardError(bool redirectStandardError = true)
+    {
+        ProcessStartInfo.RedirectStandardError = redirectStandardError;
+        return this;
+    }
     
     /// <summary>
     /// <para>
