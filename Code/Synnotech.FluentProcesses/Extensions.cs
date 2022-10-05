@@ -27,6 +27,7 @@ public static class Extensions
     {
         processStartInfo.MustNotBeNull();
 
+#pragma warning disable CA1416 -- some of the properties only work on Windows, but it's safe to access and copy them
         var clone = new ProcessStartInfo
         {
             Arguments = processStartInfo.Arguments,
@@ -49,6 +50,7 @@ public static class Extensions
             ErrorDialogParentHandle = processStartInfo.ErrorDialogParentHandle,
             PasswordInClearText = processStartInfo.PasswordInClearText
         };
+#pragma warning restore CA1416
 
         if (!copyEnvironment)
             return clone;
