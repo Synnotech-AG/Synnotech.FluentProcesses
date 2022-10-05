@@ -11,14 +11,10 @@ namespace Synnotech.FluentProcesses;
 public static class LoggingExtensions
 {
     private static Action<ILogger, string, Exception?> LogStandardOutputDelegate { get; } =
-        LoggerMessage.Define<string>(LogLevel.Information,
-                                     new EventId(1, "FluentProcesses - Log Standard Output"),
-                                     "{StandardOutput}");
+        LoggerMessage.Define<string>(LogLevel.Information, 0, "{StandardOutput}");
 
     private static Action<ILogger, string, Exception?> LogStandardErrorDelegate { get; } =
-        LoggerMessage.Define<string>(LogLevel.Error,
-                                     new EventId(2, "FluentProcesses - Log Error Output"),
-                                     "{ErrorOutput}");
+        LoggerMessage.Define<string>(LogLevel.Error, 0, "{ErrorOutput}");
 
     private static void LogStandardOutput(this ILogger logger, string standardOutput) =>
         LogStandardOutputDelegate(logger, standardOutput, null);
@@ -27,8 +23,17 @@ public static class LoggingExtensions
         LogStandardErrorDelegate(logger, standardError, null);
 
     /// <summary>
+    /// <para>
     /// Enables logging on the specified <see cref="Process" /> instance according
     /// to the behaviors defined in <paramref name="loggingSettings" />.
+    /// </para>
+    /// <para>
+    /// If you use this extension method without the usage of <see cref="FluentProcess" />,
+    /// keep in mind that you might need to call <see cref="Process.BeginOutputReadLine" />
+    /// and/or <see cref="Process.BeginErrorReadLine" /> after calling <see cref="Process.Start()" />,
+    /// depending on the value of <see cref="LoggingSettings.StandardOutputLoggingBehavior" /> and
+    /// <see cref="LoggingSettings.StandardErrorLoggingBehavior" />.
+    /// </para> 
     /// </summary>
     /// <param name="process">The process instance whose output streams should be logged.</param>
     /// <param name="loggingSettings">The settings describing how logging should be performed.</param>
@@ -38,10 +43,10 @@ public static class LoggingExtensions
     {
         process.MustNotBeNull();
 
-        var startInfo = process.StartInfo;
         if (!loggingSettings.CheckIfLoggingIsEnabled())
             return process;
 
+        var startInfo = process.StartInfo;
         var isLoggingAfterExit = false;
         if (loggingSettings.IsStandardOutputLoggingEnabled)
         {
@@ -60,11 +65,11 @@ public static class LoggingExtensions
             else
                 isLoggingAfterExit = true;
         }
+        process.EnableRaisingEvents = true;
 
         if (!isLoggingAfterExit)
             return process;
 
-        process.EnableRaisingEvents = true;
         process.Exited += (_, _) =>
         {
             var logger = loggingSettings.GetLoggerOrThrow();

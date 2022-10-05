@@ -1,0 +1,60 @@
+﻿using System;
+using System.IO;
+using System.Linq;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace Synnotech.FluentProcesses.Tests;
+
+public sealed class ProcessLoggingIntegrationTests
+{
+    public ProcessLoggingIntegrationTests(ITestOutputHelper output)
+    {
+        var solutionDirectory = FindSolutionDirectory();
+        var exePath = Path.Combine(solutionDirectory,
+                                   "SampleConsoleApp",
+                                   "bin",
+                                   Constants.BuildConfiguration,
+                                   "net6.0",
+                                   "SampleConsoleApp.exe");
+        Logger = new LoggerMock(output: output);
+        ProcessBuilder = new ProcessBuilder().WithFileName(exePath)
+                                             .WithCreateNoWindow()
+                                             .DisableShellExecute()
+                                             .EnableLogging(Logger);
+    }
+
+    private LoggerMock Logger { get; }
+    private ProcessBuilder ProcessBuilder { get; }
+
+    [Fact]
+    public void ExecuteProcessAndLog()
+    {
+        ProcessBuilder.WithArguments("--delayInterval 500")
+                      .RunProcess();
+
+        var expectedMessages = new LogMessage[]
+        {
+            new (LogLevel.Information, "Hello from Sample Console App"),
+            new (LogLevel.Information, "Here is another message"),
+            new (LogLevel.Error, "Here is an error message"),
+            new (LogLevel.Error, "Here are more errors"),
+        };
+        Logger.CapturedMessages.Should().Equal(expectedMessages);
+    }
+
+    private static string FindSolutionDirectory()
+    {
+        var directoryInfo = new DirectoryInfo(".");
+        while (directoryInfo.Parent is not null)
+        {
+            directoryInfo = directoryInfo.Parent;
+            if (directoryInfo.EnumerateFiles("*.sln").Any())
+                return directoryInfo.FullName;
+        }
+
+        throw new InvalidOperationException("Could not find directory with sln file");
+    }
+}

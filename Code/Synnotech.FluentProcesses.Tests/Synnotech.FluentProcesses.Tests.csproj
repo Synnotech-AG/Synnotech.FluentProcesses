@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\SampleConsoleApp\SampleConsoleApp.csproj" />
         <ProjectReference Include="..\Synnotech.FluentProcesses\Synnotech.FluentProcesses.csproj" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.0" />
         <PackageReference Include="xunit" Version="2.4.2" />
@@ -16,6 +17,9 @@
         </PackageReference>
         <PackageReference Include="FluentAssertions" Version="6.7.0" />
         <PackageReference Include="Synnotech.Xunit" Version="1.2.1" />
+        <PackageReference Include="Serilog.Sinks.XUnit" Version="3.0.3" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     </ItemGroup>
 
 </Project>
