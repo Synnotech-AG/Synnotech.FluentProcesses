@@ -33,7 +33,7 @@ public sealed class ProcessBuilder
 
     private ProcessStartInfo ProcessStartInfo { get; }
     private bool WasEnvironmentVariableSet { get; set; }
-    private LoggingSettings LoggingSettings { get; set; }
+    private LoggingSettings LoggingSettings { get; set; } = new (null);
 
     /// <summary>
     /// Adds a custom environment variable that the process can access when executed.
@@ -370,15 +370,41 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Sets the logging level for the standard output stream.
+    /// The default log level for it is <see cref="LogLevel.Information" />.
+    /// </summary>
+    public ProcessBuilder WithStandardOutputLogLevel(LogLevel standardOutputLogLevel)
+    {
+        LoggingSettings = LoggingSettings with { StandardOutputLogLevel = standardOutputLogLevel };
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the logging level for the standard error stream.
+    /// The default log level for it is <see cref="LogLevel.Error" />. 
+    /// </summary>
+    public ProcessBuilder WithStandardErrorLogLevel(LogLevel standardErrorLogLevel)
+    {
+        LoggingSettings = LoggingSettings with { StandardErrorLogLevel = standardErrorLogLevel };
+        return this;
+    }
+
+    /// <summary>
     /// Enables logging by setting the specified logger and setting the standard output and standard error
     /// logging behaviors to <see cref="LoggingBehavior.LogOnEvent" />.
     /// </summary>
     /// <param name="logger">The object used for logging.</param>
+    /// <param name="standardOutputLogLevel">The level used for logging messages of the standard output stream.</param>
+    /// <param name="standardErrorLogLevel">The level used for logging messages of the standard error stream.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="logger" /> is null.</exception>
-    public ProcessBuilder EnableLogging(ILogger logger) =>
+    public ProcessBuilder EnableLogging(ILogger logger,
+                                        LogLevel standardOutputLogLevel = LogLevel.Information,
+                                        LogLevel standardErrorLogLevel = LogLevel.Error) =>
         WithLogger(logger.MustNotBeNull())
            .WithStandardOutputLogging()
-           .WithStandardErrorLogging();
+           .WithStandardErrorLogging()
+           .WithStandardOutputLogLevel(standardOutputLogLevel)
+           .WithStandardErrorLogLevel(standardErrorLogLevel);
 
     /// <summary>
     /// Creates the process instance using all information gathered by this builder instance.

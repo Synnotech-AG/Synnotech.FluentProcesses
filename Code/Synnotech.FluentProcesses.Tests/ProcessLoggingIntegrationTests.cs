@@ -63,6 +63,25 @@ public sealed class ProcessLoggingIntegrationTests
         process.ExitCode.Should().Be(0);
     }
 
+    [Theory]
+    [InlineData(LogLevel.Trace, LogLevel.Warning)]
+    [InlineData(LogLevel.Debug, LogLevel.Critical)]
+    public void ChangeLogLevels(LogLevel standardOutputLogLevel, LogLevel standardErrorLogLevel)
+    {
+        ProcessBuilder.WithStandardOutputLogLevel(standardOutputLogLevel)
+                      .WithStandardErrorLogLevel(standardErrorLogLevel)
+                      .RunProcess();
+
+        var expectedMessage = new LogMessage[]
+        {
+            new (standardOutputLogLevel, "Hello from Sample Console App"),
+            new (standardOutputLogLevel, "Here is another message"),
+            new (standardErrorLogLevel, "Here is an error message"),
+            new (standardErrorLogLevel, "Here are more errors"),
+        };
+        Logger.CapturedMessages.Should().Equal(expectedMessage);
+    }
+
     private void CheckDefaultLoggingMessages()
     {
         var expectedMessages = new LogMessage[]

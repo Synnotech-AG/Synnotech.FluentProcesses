@@ -10,9 +10,13 @@ namespace Synnotech.FluentProcesses;
 /// <param name="Logger">The logger that will receive the messages.</param>
 /// <param name="StandardOutputLoggingBehavior">The logging behavior that will be applied to the standard output stream.</param>
 /// <param name="StandardErrorLoggingBehavior">The logging behavior that will be applied to the standard error stream.</param>
+/// <param name="StandardOutputLogLevel">The log level that is used when logging standard output messages.</param>
+/// <param name="StandardErrorLogLevel">The log level that is used when logging standard error messages.</param>
 public readonly record struct LoggingSettings(ILogger? Logger,
-                                              LoggingBehavior StandardOutputLoggingBehavior,
-                                              LoggingBehavior StandardErrorLoggingBehavior)
+                                              LoggingBehavior StandardOutputLoggingBehavior = LoggingBehavior.NoLogging,
+                                              LoggingBehavior StandardErrorLoggingBehavior = LoggingBehavior.NoLogging,
+                                              LogLevel StandardOutputLogLevel = LogLevel.Information,
+                                              LogLevel StandardErrorLogLevel = LogLevel.Error)
 {
     /// <summary>
     /// Gets the value indicating whether the
