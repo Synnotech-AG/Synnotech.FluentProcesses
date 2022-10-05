@@ -24,10 +24,8 @@ public sealed class LoggerMock : ILogger
                             Func<TState, Exception?, string> formatter)
     {
         var message = formatter(state, exception);
-        Output?.WriteLine(message);
-        
-        if (message is not "(null)")
-            CapturedMessages.Add(new (logLevel, message, eventId));
+        CapturedMessages.Add(new (logLevel, message, eventId));
+        Output?.WriteLine($"{message} ({logLevel})");
     }
 
     public bool IsEnabled(LogLevel logLevel) => logLevel >= MinimumLevel;
