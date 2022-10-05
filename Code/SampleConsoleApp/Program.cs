@@ -10,7 +10,7 @@ internal static class Program
     {
         var configuration = new ConfigurationBuilder().AddCommandLine(args)
                                                       .Build();
-        var delayInterval = configuration.GetValue("delayInterval", 500);
+        var delayInterval = configuration.GetValue("delayInterval", 50);
         Console.WriteLine("Hello from Sample Console App");
         await Task.Delay(delayInterval);
         Console.WriteLine("Here is another message");

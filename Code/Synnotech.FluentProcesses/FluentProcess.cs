@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Light.GuardClauses;
 
 namespace Synnotech.FluentProcesses;
@@ -47,8 +49,18 @@ public sealed class FluentProcess : IDisposable
     public void Dispose() => ActualProcess.Dispose();
 
     /// <summary>
-    /// Starts the process. Logging will be enabled if necessary.
+    /// Starts (or restarts) the process. Logging will be enabled if necessary.
     /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// No file name was specified in the Process component's StartInfo. -or-
+    /// The UseShellExecute member of the StartInfo property is true while
+    /// RedirectStandardInput, RedirectStandardOutput, or RedirectStandardError is true.
+    /// </exception>
+    /// <exception cref="Win32Exception">There was an error in opening the associated file.</exception>
+    /// <exception cref="ObjectDisposedException">The process object has already been disposed.</exception>
+    /// <exception cref="PlatformNotSupportedException">
+    /// Method not supported on operating systems without shell support such as Nano Server (.NET Core only).
+    /// </exception>
     public void Start()
     {
         if (!WasStarted)
@@ -97,4 +109,23 @@ public sealed class FluentProcess : IDisposable
     /// This method is available only for processes that are running on the local computer.
     /// </exception>
     public bool WaitForExit(int milliseconds) => ActualProcess.WaitForExit(milliseconds);
+    
+#if NET6_0
+    /// <summary>
+    /// Instructs the <see cref="ActualProcess" /> to wait for the associated process to exit,
+    /// or for the cancellationToken to be cancelled.
+    /// </summary>
+    /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// A task that will complete when the process has exited, cancellation has been requested, or an error occurs.
+    /// </returns>
+    /// <exception cref="Win32Exception">The wait setting could not be accessed.</exception>
+    /// <exception cref="SystemException">
+    /// No process Id has been set, and a Handle from which the Id property can be determined does not exist. -or-
+    /// There is no process associated with <see cref="ActualProcess" /> object. -or-
+    /// You are attempting to call WaitForExit() for a process that is running on a remote computer.
+    /// This method is available only for processes that are running on the local computer.
+    /// </exception>
+    public Task WaitForExitAsync(CancellationToken cancellationToken = default) => ActualProcess.WaitForExitAsync(cancellationToken);
+#endif
 }
