@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Security;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Light.GuardClauses;
 using Microsoft.Extensions.Logging;
 
@@ -369,11 +371,11 @@ public sealed class ProcessBuilder
     public FluentProcess CreateProcess() =>
         new (new Process { StartInfo = ProcessStartInfo }, LoggingSettings);
 
-    
     /// <summary>
     /// Creates a process instance out of the information attached to this process builder instance,
     /// starts it and waits for exit. Afterwards, the process is disposed.
     /// </summary>
+    /// <returns>The exit code of the process.</returns>
     public int RunProcess()
     {
         using var process = CreateProcess();
@@ -381,4 +383,20 @@ public sealed class ProcessBuilder
         process.WaitForExit();
         return process.ExitCode;
     }
+    
+#if NET6_0
+    /// <summary>
+    /// Creates a process instance out of the information attached to this process builder instance,
+    /// starts it and waits for exit asynchronously. Afterwards, the process is disposed.
+    /// </summary>
+    /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+    /// <returns>The exit code of the process.</returns>
+    public async Task<int> RunProcessAsync(CancellationToken cancellationToken = default)
+    {
+        using var process = CreateProcess();
+        process.Start();
+        await process.WaitForExitAsync(cancellationToken);
+        return process.ExitCode;
+    }
+#endif
 }

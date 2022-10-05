@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -32,9 +33,24 @@ public sealed class ProcessLoggingIntegrationTests
     [Fact]
     public void ExecuteProcessAndLog()
     {
-        ProcessBuilder.WithArguments("--delayInterval 500")
-                      .RunProcess();
+        var exitCode = ProcessBuilder.WithArguments("--delayInterval 100")
+                                     .RunProcess();
 
+        exitCode.Should().Be(0);
+        CheckDefaultLoggingMessages();
+    }
+
+    [Fact]
+    public async Task ExecuteProcessAndLogAsync()
+    {
+        var exitCode = await ProcessBuilder.RunProcessAsync();
+
+        exitCode.Should().Be(0);
+        CheckDefaultLoggingMessages();
+    }
+
+    private void CheckDefaultLoggingMessages()
+    {
         var expectedMessages = new LogMessage[]
         {
             new (LogLevel.Information, "Hello from Sample Console App"),
