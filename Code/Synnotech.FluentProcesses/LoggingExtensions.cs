@@ -52,18 +52,34 @@ public static class LoggingExtensions
         {
             startInfo.RedirectStandardOutput = true;
             if (loggingSettings.StandardOutputLoggingBehavior == LoggingBehavior.LogOnEvent)
-                process.OutputDataReceived += (_, e) => loggingSettings.GetLoggerOrThrow().LogStandardOutput(e.Data);
+            {
+                process.OutputDataReceived += (_, e) =>
+                {
+                    if (e.Data is not null)
+                        loggingSettings.GetLoggerOrThrow().LogStandardOutput(e.Data);
+                };
+            }
             else
+            {
                 isLoggingAfterExit = true;
+            }
         }
 
         if (loggingSettings.IsStandardErrorLoggingEnabled)
         {
             startInfo.RedirectStandardError = true;
             if (loggingSettings.StandardErrorLoggingBehavior == LoggingBehavior.LogOnEvent)
-                process.ErrorDataReceived += (_, e) => loggingSettings.GetLoggerOrThrow().LogStandardError(e.Data);
+            {
+                process.ErrorDataReceived += (_, e) =>
+                {
+                    if (e.Data is not null)
+                        loggingSettings.GetLoggerOrThrow().LogStandardError(e.Data);
+                };
+            }
             else
+            {
                 isLoggingAfterExit = true;
+            }
         }
         process.EnableRaisingEvents = true;
 
