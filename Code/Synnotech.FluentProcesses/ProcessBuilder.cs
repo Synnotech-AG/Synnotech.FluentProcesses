@@ -6,6 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Light.GuardClauses;
 using Microsoft.Extensions.Logging;
+#if NET6_0
+using System.Runtime.Versioning;
+#endif
 
 namespace Synnotech.FluentProcesses;
 
@@ -75,6 +78,9 @@ public sealed class ProcessBuilder
     /// an AD domain is only supported on Windows platforms.
     /// </para>
     /// </summary>
+#if NET6_0
+    [SupportedOSPlatform("windows")]
+#endif
     public ProcessBuilder WithDomain(string? domain)
     {
         ProcessStartInfo.Domain = domain;
@@ -99,6 +105,9 @@ public sealed class ProcessBuilder
     /// Secure strings can only be created on Windows platforms.
     /// </para>
     /// </summary>
+#if NET6_0
+    [SupportedOSPlatform("windows")]
+#endif
     public ProcessBuilder WithPassword(SecureString? password)
     {
         ProcessStartInfo.Password = password;
@@ -188,6 +197,9 @@ public sealed class ProcessBuilder
     /// this feature enabled will only work on Windows platforms.
     /// </para>
     /// </summary>
+#if NET6_0
+    [SupportedOSPlatform("windows")]
+#endif
     public ProcessBuilder WithLoadUserProfile(bool loadUserProfile = true)
     {
         ProcessStartInfo.LoadUserProfile = loadUserProfile;
@@ -294,6 +306,9 @@ public sealed class ProcessBuilder
     /// user name and password is only supported on Windows platforms.
     /// </para>
     /// </summary>
+#if NET6_0
+    [SupportedOSPlatform("windows")]
+#endif
     public ProcessBuilder WithPasswordInClearText(string password)
     {
         ProcessStartInfo.PasswordInClearText = password;
@@ -359,7 +374,7 @@ public sealed class ProcessBuilder
     /// logging behaviors to <see cref="LoggingBehavior.LogOnEvent" />.
     /// </summary>
     /// <param name="logger">The object used for logging.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="logger"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="logger" /> is null.</exception>
     public ProcessBuilder EnableLogging(ILogger logger) =>
         WithLogger(logger.MustNotBeNull())
            .WithStandardOutputLogging()
@@ -383,7 +398,7 @@ public sealed class ProcessBuilder
         process.WaitForExit();
         return process.ExitCode;
     }
-    
+
 #if NET6_0
     /// <summary>
     /// Creates a process instance out of the information attached to this process builder instance,
