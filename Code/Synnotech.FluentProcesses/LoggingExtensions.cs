@@ -10,17 +10,48 @@ namespace Synnotech.FluentProcesses;
 /// </summary>
 public static class LoggingExtensions
 {
-    private static Action<ILogger, string, Exception?> LogStandardOutputDelegate { get; } =
-        LoggerMessage.Define<string>(LogLevel.Information, 0, "{StandardOutput}");
+    private static Action<ILogger, string, Exception?> LogTraceDelegate { get; } =
+        LoggerMessage.Define<string>(LogLevel.Trace, 0, "{Message}");
+    
+    private static Action<ILogger, string, Exception?> LogDebugDelegate { get; } =
+        LoggerMessage.Define<string>(LogLevel.Debug, 0, "{Message}");
+    
+    private static Action<ILogger, string, Exception?> LogInformationDelegate { get; } =
+        LoggerMessage.Define<string>(LogLevel.Information, 0, "{Message}");
+    
+    private static Action<ILogger, string, Exception?> LogWarningDelegate { get; } =
+        LoggerMessage.Define<string>(LogLevel.Warning, 0, "{Message}");
 
-    private static Action<ILogger, string, Exception?> LogStandardErrorDelegate { get; } =
-        LoggerMessage.Define<string>(LogLevel.Error, 0, "{ErrorOutput}");
-
-    private static void LogStandardOutput(this ILogger logger, string standardOutput) =>
-        LogStandardOutputDelegate(logger, standardOutput, null);
-
-    private static void LogStandardError(this ILogger logger, string standardError) =>
-        LogStandardErrorDelegate(logger, standardError, null);
+    private static Action<ILogger, string, Exception?> LogErrorDelegate { get; } =
+        LoggerMessage.Define<string>(LogLevel.Error, 0, "{Message}");
+    
+    private static Action<ILogger, string, Exception?> LogCriticalDelegate { get; } =
+        LoggerMessage.Define<string>(LogLevel.Critical, 0, "{Message}");
+    
+    private static void LogReceivedData(this ILogger logger, string message, LogLevel logLevel) 
+    {
+        switch (logLevel)
+        {
+            case LogLevel.Trace:
+                LogTraceDelegate(logger, message, null);
+                break;
+            case LogLevel.Debug:
+                LogDebugDelegate(logger, message, null);
+                break;
+            case LogLevel.Information:
+                LogInformationDelegate(logger, message, null);
+                break;
+            case LogLevel.Warning:
+                LogWarningDelegate(logger, message, null);
+                break;
+            case LogLevel.Error:
+                LogErrorDelegate(logger, message, null);
+                break;
+            case LogLevel.Critical:
+                LogCriticalDelegate(logger, message, null);
+                break;
+        }
+    }
 
     /// <summary>
     /// <para>
@@ -56,7 +87,7 @@ public static class LoggingExtensions
                 process.OutputDataReceived += (_, e) =>
                 {
                     if (e.Data is not null)
-                        loggingSettings.GetLoggerOrThrow().LogStandardOutput(e.Data);
+                        loggingSettings.GetLoggerOrThrow().LogReceivedData(e.Data, loggingSettings.StandardOutputLogLevel);
                 };
             }
             else
@@ -73,7 +104,7 @@ public static class LoggingExtensions
                 process.ErrorDataReceived += (_, e) =>
                 {
                     if (e.Data is not null)
-                        loggingSettings.GetLoggerOrThrow().LogStandardError(e.Data);
+                        loggingSettings.GetLoggerOrThrow().LogReceivedData(e.Data, loggingSettings.StandardErrorLogLevel);
                 };
             }
             else
@@ -89,11 +120,11 @@ public static class LoggingExtensions
         process.Exited += (_, _) =>
         {
             var logger = loggingSettings.GetLoggerOrThrow();
-            if (loggingSettings.StandardOutputLoggingBehavior == LoggingBehavior.LogAfterProcessExit)
-                logger.LogStandardOutput(process.StandardOutput.ReadToEnd());
+            if (loggingSettings.StandardOutputLoggingBehavior == LoggingBehavior.LogAfterProcessExit && loggingSettings.StandardOutputLogLevel != LogLevel.None)
+                logger.LogReceivedData(process.StandardOutput.ReadToEnd(), loggingSettings.StandardOutputLogLevel);
 
-            if (loggingSettings.StandardErrorLoggingBehavior == LoggingBehavior.LogAfterProcessExit)
-                logger.LogStandardError(process.StandardError.ReadToEnd());
+            if (loggingSettings.StandardErrorLoggingBehavior == LoggingBehavior.LogAfterProcessExit && loggingSettings.StandardErrorLogLevel != LogLevel.None)
+                logger.LogReceivedData(process.StandardError.ReadToEnd(), loggingSettings.StandardErrorLogLevel);
         };
 
         return process;
