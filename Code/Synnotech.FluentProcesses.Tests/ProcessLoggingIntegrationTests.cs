@@ -49,6 +49,20 @@ public sealed class ProcessLoggingIntegrationTests
         CheckDefaultLoggingMessages();
     }
 
+    [Fact]
+    public void RunProcessSeveralTimes()
+    {
+        using var process = ProcessBuilder.CreateProcess();
+        
+        process.Start();
+        process.WaitForExit();
+        process.ExitCode.Should().Be(0);
+        
+        process.Start();
+        process.WaitForExit();
+        process.ExitCode.Should().Be(0);
+    }
+
     private void CheckDefaultLoggingMessages()
     {
         var expectedMessages = new LogMessage[]
