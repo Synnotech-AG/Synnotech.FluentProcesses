@@ -18,11 +18,13 @@ public sealed class FluentProcess : IDisposable
     /// </summary>
     /// <param name="actualProcess">The process instance that will be orchestrated.</param>
     /// <param name="loggingSettings">The settings object specifying how logging is handled.</param>
+    /// <param name="validExitCodes">The array which contains all valid exit codes for the process.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="actualProcess" /> is null.</exception>
-    public FluentProcess(Process actualProcess, LoggingSettings loggingSettings)
+    public FluentProcess(Process actualProcess, LoggingSettings loggingSettings, int[]? validExitCodes = null)
     {
         ActualProcess = actualProcess.MustNotBeNull();
         LoggingSettings = loggingSettings;
+        ValidExitCodes = validExitCodes;
     }
 
     /// <summary>
@@ -40,7 +42,16 @@ public sealed class FluentProcess : IDisposable
     /// </summary>
     public int ExitCode => ActualProcess.ExitCode;
 
-    private LoggingSettings LoggingSettings { get; }
+    /// <summary>
+    /// Gets the settings object that determines the logging behavior of this process.
+    /// </summary>
+    public LoggingSettings LoggingSettings { get; }
+
+    /// <summary>
+    /// Gets the array of valid exit codes. You need to call
+    /// </summary>
+    public int[]? ValidExitCodes { get; }
+
     private bool WasStarted { get; set; }
 
     /// <summary>
@@ -109,7 +120,7 @@ public sealed class FluentProcess : IDisposable
     /// This method is available only for processes that are running on the local computer.
     /// </exception>
     public bool WaitForExit(int milliseconds) => ActualProcess.WaitForExit(milliseconds);
-    
+
 #if NET6_0
     /// <summary>
     /// Instructs the <see cref="ActualProcess" /> to wait for the associated process to exit,
@@ -128,4 +139,26 @@ public sealed class FluentProcess : IDisposable
     /// </exception>
     public Task WaitForExitAsync(CancellationToken cancellationToken = default) => ActualProcess.WaitForExitAsync(cancellationToken);
 #endif
+
+    /// <summary>
+    /// Checks if the exit code of the <see cref="ActualProcess" /> is valid.
+    /// If <see cref="ValidExitCodes" /> is null, then no check will be performed.
+    /// Otherwise, if the array does not contain the exit code of the process,
+    /// </summary>
+    /// <exception cref="InvalidExitCodeException">Thrown when the exit code of this process is not one of the <see cref="ValidExitCodes" />.</exception>
+    public void VerifyExitCodeIfNecessary()
+    {
+        if (ValidExitCodes.IsNullOrEmpty())
+            return;
+
+        var exitCode = ExitCode;
+        var validExitCodes = ValidExitCodes;
+        for (var i = 0; i < validExitCodes.Length; i++)
+        {
+            if (validExitCodes[i] == exitCode)
+                return;
+        }
+
+        throw new InvalidExitCodeException(this, validExitCodes, $"Process \"{StartInfo.FileName} {StartInfo.Arguments}\" exited with invalid code {exitCode}.");
+    }
 }

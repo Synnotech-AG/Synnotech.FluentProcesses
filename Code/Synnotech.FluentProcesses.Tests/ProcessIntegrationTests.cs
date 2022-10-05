@@ -9,9 +9,9 @@ using Xunit.Abstractions;
 
 namespace Synnotech.FluentProcesses.Tests;
 
-public sealed class ProcessLoggingIntegrationTests
+public sealed class ProcessIntegrationTests
 {
-    public ProcessLoggingIntegrationTests(ITestOutputHelper output)
+    public ProcessIntegrationTests(ITestOutputHelper output)
     {
         var solutionDirectory = FindSolutionDirectory();
         var exePath = Path.Combine(solutionDirectory,
@@ -53,11 +53,11 @@ public sealed class ProcessLoggingIntegrationTests
     public void RunProcessSeveralTimes()
     {
         using var process = ProcessBuilder.CreateProcess();
-        
+
         process.Start();
         process.WaitForExit();
         process.ExitCode.Should().Be(0);
-        
+
         process.Start();
         process.WaitForExit();
         process.ExitCode.Should().Be(0);
@@ -92,6 +92,44 @@ public sealed class ProcessLoggingIntegrationTests
             new (LogLevel.Error, "Here are more errors"),
         };
         Logger.CapturedMessages.Should().Equal(expectedMessages);
+    }
+
+    [Theory]
+    [InlineData(42)]
+    [InlineData(87)]
+    public async Task ChangeValidExitCodes(int exitCode)
+    {
+        var actualExitCode = await ProcessBuilder.WithArguments("--exitCode " + exitCode)
+                                                 .WithValidExitCodes(42, 87)
+                                                 .RunProcessAsync();
+
+        actualExitCode.Should().Be(exitCode);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(20)]
+    public async Task InvalidExitCode(int exitCode)
+    {
+        ProcessBuilder.WithArguments("--exitCode " + exitCode)
+                      .WithValidExitCodes(42, 87);
+
+        var act = () => ProcessBuilder.RunProcessAsync();
+
+        await act.Should().ThrowAsync<InvalidExitCodeException>();
+    }
+
+    [Theory]
+    [InlineData(5)]
+    [InlineData(-1)]
+    public void DisableExitCodeVerification(int exitCode)
+    {
+        var actualExitCode = ProcessBuilder.WithArguments("--exitCode " + exitCode)
+                                           .DisableExitCodeVerification()
+                                           .RunProcess();
+
+        actualExitCode.Should().Be(exitCode);
     }
 
     private static string FindSolutionDirectory()

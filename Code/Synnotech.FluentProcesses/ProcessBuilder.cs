@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Security;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Light.GuardClauses;
 using Microsoft.Extensions.Logging;
 #if NET6_0
+using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.Versioning;
 #endif
 
@@ -31,9 +31,12 @@ public sealed class ProcessBuilder
     public ProcessBuilder(ProcessStartInfo processStartInfo) =>
         ProcessStartInfo = processStartInfo.MustNotBeNull();
 
+    private static int[]? DefaultValidExitCodes { get; } = { 0 };
+
     private ProcessStartInfo ProcessStartInfo { get; }
     private bool WasEnvironmentVariableSet { get; set; }
     private LoggingSettings LoggingSettings { get; set; } = new (null);
+    private int[]? ValidExitCodes { get; set; } = DefaultValidExitCodes;
 
     /// <summary>
     /// Adds a custom environment variable that the process can access when executed.
@@ -381,7 +384,7 @@ public sealed class ProcessBuilder
 
     /// <summary>
     /// Sets the logging level for the standard error stream.
-    /// The default log level for it is <see cref="LogLevel.Error" />. 
+    /// The default log level for it is <see cref="LogLevel.Error" />.
     /// </summary>
     public ProcessBuilder WithStandardErrorLogLevel(LogLevel standardErrorLogLevel)
     {
@@ -407,10 +410,32 @@ public sealed class ProcessBuilder
            .WithStandardErrorLogLevel(standardErrorLogLevel);
 
     /// <summary>
+    /// Sets the exit codes that are valid for the process. By default, FluentProcesses checks
+    /// if the exit code is 0.
+    /// The exit code of a process will be validated when <see cref="FluentProcess.VerifyExitCodeIfNecessary" />
+    /// is called. This is automatically done when calling RunProcess(Async).
+    /// </summary>
+    public ProcessBuilder WithValidExitCodes(params int[] validExitCodes)
+    {
+        ValidExitCodes = validExitCodes;
+        return this;
+    }
+
+    /// <summary>
+    /// Disables exit code verification. By default, FluentProcesses checks
+    /// if the exit code of a process is 0.
+    /// </summary>
+    public ProcessBuilder DisableExitCodeVerification()
+    {
+        ValidExitCodes = null;
+        return this;
+    }
+
+    /// <summary>
     /// Creates the process instance using all information gathered by this builder instance.
     /// </summary>
     public FluentProcess CreateProcess() =>
-        new (new Process { StartInfo = ProcessStartInfo }, LoggingSettings);
+        new (new Process { StartInfo = ProcessStartInfo }, LoggingSettings, ValidExitCodes);
 
     /// <summary>
     /// Creates a process instance out of the information attached to this process builder instance,
@@ -422,6 +447,7 @@ public sealed class ProcessBuilder
         using var process = CreateProcess();
         process.Start();
         process.WaitForExit();
+        process.VerifyExitCodeIfNecessary();
         return process.ExitCode;
     }
 
@@ -437,6 +463,7 @@ public sealed class ProcessBuilder
         using var process = CreateProcess();
         process.Start();
         await process.WaitForExitAsync(cancellationToken);
+        process.VerifyExitCodeIfNecessary();
         return process.ExitCode;
     }
 #endif
