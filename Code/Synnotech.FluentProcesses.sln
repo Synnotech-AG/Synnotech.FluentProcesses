@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synnotech.FluentProcesses",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synnotech.FluentProcesses.Tests", "Synnotech.FluentProcesses.Tests\Synnotech.FluentProcesses.Tests.csproj", "{14F40055-3F57-47FE-B27F-37F9AC94602D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleConsoleApp", "SampleConsoleApp\SampleConsoleApp.csproj", "{1E052367-6E8B-4442-A585-222D02F7FA63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{14F40055-3F57-47FE-B27F-37F9AC94602D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14F40055-3F57-47FE-B27F-37F9AC94602D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14F40055-3F57-47FE-B27F-37F9AC94602D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E052367-6E8B-4442-A585-222D02F7FA63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E052367-6E8B-4442-A585-222D02F7FA63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E052367-6E8B-4442-A585-222D02F7FA63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E052367-6E8B-4442-A585-222D02F7FA63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

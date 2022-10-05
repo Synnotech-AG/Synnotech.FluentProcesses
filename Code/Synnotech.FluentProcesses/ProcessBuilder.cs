@@ -353,11 +353,32 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Enables logging by setting the specified logger and setting the standard output and standard error
+    /// logging behaviors to <see cref="LoggingBehavior.LogOnEvent" />.
+    /// </summary>
+    /// <param name="logger">The object used for logging.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="logger"/> is null.</exception>
+    public ProcessBuilder EnableLogging(ILogger logger) =>
+        WithLogger(logger.MustNotBeNull())
+           .WithStandardOutputLogging()
+           .WithStandardErrorLogging();
+
+    /// <summary>
     /// Creates the process instance using all information gathered by this builder instance.
     /// </summary>
-    public Process CreateProcess()
+    public FluentProcess CreateProcess() =>
+        new (new Process { StartInfo = ProcessStartInfo }, LoggingSettings);
+
+    
+    /// <summary>
+    /// Creates a process instance out of the information attached to this process builder instance,
+    /// starts it and waits for exit. Afterwards, the process is disposed.
+    /// </summary>
+    public int RunProcess()
     {
-        var process = new Process { StartInfo = ProcessStartInfo };
-        return process.EnableLoggingIfNecessary(LoggingSettings);
+        using var process = CreateProcess();
+        process.Start();
+        process.WaitForExit();
+        return process.ExitCode;
     }
 }
