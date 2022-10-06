@@ -156,7 +156,7 @@ public sealed class ProcessIntegrationTests
 
     [Theory]
     [InlineData(5)]
-    [InlineData(-1)]
+    [InlineData(128)]
     public void DisableExitCodeVerification(int exitCode)
     {
         var actualExitCode = ProcessBuilder.WithArguments("--exitCode " + exitCode)
