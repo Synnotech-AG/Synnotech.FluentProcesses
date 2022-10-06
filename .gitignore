@@ -6,3 +6,4 @@ obj/
 *.user
 *.snk
 LocalBuild.props
+testenvironments.json
