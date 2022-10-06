@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
+#if NET6_0
+using System.Threading.Tasks;
+#endif
 
 namespace Synnotech.FluentProcesses.Tests;
 
@@ -40,6 +42,7 @@ public sealed class ProcessIntegrationTests
         CheckDefaultLoggingMessages();
     }
 
+#if NET6_0
     [Fact]
     public async Task ExecuteProcessAndLogAsync()
     {
@@ -48,6 +51,7 @@ public sealed class ProcessIntegrationTests
         exitCode.Should().Be(0);
         CheckDefaultLoggingMessages();
     }
+#endif
 
     [Fact]
     public void RunProcessSeveralTimes()
@@ -94,10 +98,11 @@ public sealed class ProcessIntegrationTests
         Logger.CapturedMessages.Should().Equal(expectedMessages);
     }
 
+#if NET6_0
     [Theory]
     [InlineData(42)]
     [InlineData(87)]
-    public async Task ChangeValidExitCodes(int exitCode)
+    public async Task ChangeValidExitCodesAsync(int exitCode)
     {
         var actualExitCode = await ProcessBuilder.WithArguments("--exitCode " + exitCode)
                                                  .WithValidExitCodes(42, 87)
@@ -105,12 +110,26 @@ public sealed class ProcessIntegrationTests
 
         actualExitCode.Should().Be(exitCode);
     }
+#endif
 
+    [Theory]
+    [InlineData(42)]
+    [InlineData(87)]
+    public void ChangeValidExitCodes(int exitCode)
+    {
+        var actualExitCode = ProcessBuilder.WithArguments("--exitCode " + exitCode)
+                                           .WithValidExitCodes(42, 87)
+                                           .RunProcess();
+
+        actualExitCode.Should().Be(exitCode);
+    }
+
+#if NET6_0
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
     [InlineData(20)]
-    public async Task InvalidExitCode(int exitCode)
+    public async Task InvalidExitCodeAsync(int exitCode)
     {
         ProcessBuilder.WithArguments("--exitCode " + exitCode)
                       .WithValidExitCodes(42, 87);
@@ -118,6 +137,21 @@ public sealed class ProcessIntegrationTests
         var act = () => ProcessBuilder.RunProcessAsync();
 
         await act.Should().ThrowAsync<InvalidExitCodeException>();
+    }
+#endif
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(20)]
+    public void InvalidExitCode(int exitCode)
+    {
+        ProcessBuilder.WithArguments("--exitCode " + exitCode)
+                      .WithValidExitCodes(42, 87);
+
+        var act = () => ProcessBuilder.RunProcess();
+
+        act.Should().Throw<InvalidExitCodeException>();
     }
 
     [Theory]

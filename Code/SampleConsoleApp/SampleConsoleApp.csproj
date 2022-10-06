@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    
+    <Import Project="../LocalBuild.props" Condition="Exists('../LocalBuild.props')" />
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework Condition="'$(TargetFrameworks)' == '' AND '$(TargetFramework)' == ''">net6.0</TargetFramework>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     

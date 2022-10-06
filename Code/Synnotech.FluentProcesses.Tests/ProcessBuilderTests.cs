@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace Synnotech.FluentProcesses.Tests;
 
-#pragma warning disable CA1416 // Some properties only work on Windows, but they can be safely set and read in these tests
+#pragma warning disable CA1416 // Some properties only work on Windows, but these tests are skipped on other platforms
 
 public sealed class ProcessBuilderTests
 {
@@ -71,22 +71,33 @@ public sealed class ProcessBuilderTests
         process.StartInfo.Arguments.Should().BeEmpty();
     }
 
-    [Theory]
+    [SkippableTheory]
     [InlineData("site.contoso.com")]
     [InlineData("synnotech.de")]
     public void SetDomain(string domain)
     {
+        SkipIfNotWindows();
+        
         using var process = ProcessBuilder.WithDomain(domain)
                                           .CreateProcess();
 
         process.StartInfo.Domain.Should().BeSameAs(domain);
     }
 
-    [Theory]
+    private static void SkipIfNotWindows()
+    {
+#if NET6_0
+        Skip.IfNot(OperatingSystem.IsWindows());
+#endif
+    }
+
+    [SkippableTheory]
     [InlineData(null)]
     [InlineData("")]
     public void UnsetDomain(string unsetValue)
     {
+        SkipIfNotWindows();
+        
         using var process = ProcessBuilder.WithDomain("Foo")
                                           .WithDomain(unsetValue)
                                           .CreateProcess();
@@ -107,7 +118,7 @@ public sealed class ProcessBuilderTests
     [SkippableFact]
     public void SetPassword()
     {
-        Skip.IfNot(OperatingSystem.IsWindows());
+        SkipIfNotWindows();
 
         var secureString = CreateSecureString();
 
@@ -120,7 +131,7 @@ public sealed class ProcessBuilderTests
     [SkippableFact]
     public void UnsetPassword()
     {
-        Skip.IfNot(OperatingSystem.IsWindows());
+        SkipIfNotWindows();
 
         var secureString = CreateSecureString();
 
@@ -214,10 +225,12 @@ public sealed class ProcessBuilderTests
         process.StartInfo.WorkingDirectory.Should().BeSameAs(workingDirectory);
     }
 
-    [Theory]
+    [SkippableTheory]
     [MemberData(nameof(BooleanValues))]
     public void SetLoadUserProfile(bool value)
     {
+        SkipIfNotWindows();
+        
         using var process = ProcessBuilder.WithLoadUserProfile(value)
                                           .CreateProcess();
 
@@ -315,11 +328,13 @@ public sealed class ProcessBuilderTests
         process.StartInfo.ErrorDialogParentHandle.Should().Be(handle);
     }
 
-    [Theory]
+    [SkippableTheory]
     [InlineData("secret")]
     [InlineData("This password is really safe")]
     public void SetPasswordInClearText(string password)
     {
+        SkipIfNotWindows();
+        
         using var process = ProcessBuilder.WithPasswordInClearText(password)
                                           .CreateProcess();
 
@@ -355,5 +370,5 @@ public sealed class ProcessBuilderTests
         new () { true, false };
 
     public static TheoryData<Encoding?> Encodings { get; } =
-        new () { Encoding.UTF8, Encoding.Unicode, Encoding.Latin1, null };
+        new () { Encoding.UTF8, Encoding.Unicode, Encoding.ASCII, null };
 }
