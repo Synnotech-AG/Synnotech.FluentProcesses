@@ -9,12 +9,11 @@ using Xunit.Abstractions;
 
 namespace Synnotech.FluentProcesses.Tests;
 
+#pragma warning disable CA1416 // Some properties only work on Windows, but they can be safely set and read in these tests
+
 public sealed class ProcessBuilderTests
 {
-    public ProcessBuilderTests(ITestOutputHelper output)
-    {
-        Output = output;
-    }
+    public ProcessBuilderTests(ITestOutputHelper output) => Output = output;
 
     private ITestOutputHelper Output { get; }
     private ProcessBuilder ProcessBuilder { get; } = new ();
@@ -80,9 +79,7 @@ public sealed class ProcessBuilderTests
         using var process = ProcessBuilder.WithDomain(domain)
                                           .CreateProcess();
 
-#pragma warning disable CA1416 // The setter can be called although AD domains are only supported on Windows
         process.StartInfo.Domain.Should().BeSameAs(domain);
-#pragma warning restore CA1416
     }
 
     [Theory]
@@ -94,9 +91,7 @@ public sealed class ProcessBuilderTests
                                           .WithDomain(unsetValue)
                                           .CreateProcess();
 
-#pragma warning disable CA1416 // The setter can be called although AD domains are only supported on Windows
         process.StartInfo.Domain.Should().BeEmpty();
-#pragma warning restore CA1416
     }
 
     [Theory]
@@ -119,9 +114,7 @@ public sealed class ProcessBuilderTests
         using var process = ProcessBuilder.WithPassword(secureString)
                                           .CreateProcess();
 
-#pragma warning disable CA1416 // The setter can be called although user and password for processes only work on Windows
         process.StartInfo.Password.Should().BeSameAs(secureString);
-#pragma warning restore CA1416
     }
 
     [SkippableFact]
@@ -135,9 +128,7 @@ public sealed class ProcessBuilderTests
                                           .WithPassword(null)
                                           .CreateProcess();
 
-#pragma warning disable CA1416 // The setter can be called although user and password for processes only work on Windows
         process.StartInfo.Password.Should().BeNull();
-#pragma warning restore CA1416
     }
 
     private static SecureString CreateSecureString()
@@ -230,9 +221,7 @@ public sealed class ProcessBuilderTests
         using var process = ProcessBuilder.WithLoadUserProfile(value)
                                           .CreateProcess();
 
-#pragma warning disable CA1416 // The setter can be called although Load User Profile only works on Windows
         process.StartInfo.LoadUserProfile.Should().Be(value);
-#pragma warning restore CA1416
     }
 
     [Theory]
@@ -334,9 +323,7 @@ public sealed class ProcessBuilderTests
         using var process = ProcessBuilder.WithPasswordInClearText(password)
                                           .CreateProcess();
 
-#pragma warning disable CA1416 // The setter can be called although user and password for processes only work on Windows
         process.StartInfo.PasswordInClearText.Should().BeSameAs(password);
-#pragma warning restore CA1416
     }
 
     [Fact]
