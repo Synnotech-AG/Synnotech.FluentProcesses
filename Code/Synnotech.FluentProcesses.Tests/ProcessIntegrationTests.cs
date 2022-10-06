@@ -19,7 +19,7 @@ public sealed class ProcessIntegrationTests
                                    "bin",
                                    Constants.BuildConfiguration,
                                    "net6.0",
-                                   "SampleConsoleApp.exe");
+                                   Constants.SampleConsoleAppExe);
         Logger = new LoggerMock(output: output);
         ProcessBuilder = new ProcessBuilder().WithFileName(exePath)
                                              .WithCreateNoWindow()

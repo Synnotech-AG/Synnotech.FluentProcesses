@@ -1,4 +1,6 @@
-﻿namespace Synnotech.FluentProcesses.Tests;
+﻿using System;
+
+namespace Synnotech.FluentProcesses.Tests;
 
 public static class Constants
 {
@@ -8,4 +10,7 @@ public static class Constants
 #else
         "Release";
 #endif
+
+    public static string SampleConsoleAppExe { get; } =
+        OperatingSystem.IsWindows() ? "SampleConsoleApp.exe" : "SampleConsoleApp";
 }
