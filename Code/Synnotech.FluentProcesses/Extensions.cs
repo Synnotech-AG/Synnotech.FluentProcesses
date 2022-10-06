@@ -27,20 +27,16 @@ public static class Extensions
     {
         processStartInfo.MustNotBeNull();
 
-#pragma warning disable CA1416 // some of the properties only work on Windows, but it's safe to access and copy them
         var clone = new ProcessStartInfo
         {
             Arguments = processStartInfo.Arguments,
-            Domain = processStartInfo.Domain,
             CreateNoWindow = processStartInfo.CreateNoWindow,
-            Password = processStartInfo.Password,
             Verb = processStartInfo.Verb,
             ErrorDialog = processStartInfo.ErrorDialog,
             FileName = processStartInfo.FileName,
             UserName = processStartInfo.UserName,
             WindowStyle = processStartInfo.WindowStyle,
             WorkingDirectory = processStartInfo.WorkingDirectory,
-            LoadUserProfile = processStartInfo.LoadUserProfile,
             RedirectStandardError = processStartInfo.RedirectStandardError,
             RedirectStandardInput = processStartInfo.RedirectStandardInput,
             RedirectStandardOutput = processStartInfo.RedirectStandardOutput,
@@ -48,9 +44,16 @@ public static class Extensions
             StandardOutputEncoding = processStartInfo.StandardOutputEncoding,
             UseShellExecute = processStartInfo.UseShellExecute,
             ErrorDialogParentHandle = processStartInfo.ErrorDialogParentHandle,
-            PasswordInClearText = processStartInfo.PasswordInClearText
         };
-#pragma warning restore CA1416
+
+#if NET6_0
+        if (OperatingSystem.IsWindows())
+        {
+            CopyWindowsSpecificProperties(processStartInfo, clone);
+        }
+#else
+        CopyWindowsSpecificProperties(processStartInfo, clone);
+#endif
 
         if (!copyEnvironment)
             return clone;
@@ -61,5 +64,15 @@ public static class Extensions
         }
 
         return clone;
+    }
+
+    private static void CopyWindowsSpecificProperties(ProcessStartInfo source, ProcessStartInfo target)
+    {
+#pragma warning disable CA1416 // this method is only called when we definitely run on windows
+        target.Domain = source.Domain;
+        target.Password = source.Password;
+        target.LoadUserProfile = source.LoadUserProfile;
+        target.PasswordInClearText = source.PasswordInClearText;
+#pragma warning restore CA1416
     }
 }
