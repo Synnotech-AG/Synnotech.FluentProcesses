@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    
+    <Import Project="../LocalBuild.props" Condition="Exists('../LocalBuild.props')" />
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework Condition="'$(TargetFrameworks)' == '' AND '$(TargetFramework)' == ''">net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
@@ -20,6 +22,7 @@
         <PackageReference Include="Serilog.Sinks.XUnit" Version="3.0.3" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="IsExternalInit" Version="1.0.3" PrivateAssets="all" />
     </ItemGroup>
 
 </Project>
