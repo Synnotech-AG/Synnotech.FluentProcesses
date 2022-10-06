@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Security;
 using System.Text;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using Synnotech.Xunit;
 using Xunit;
 using Xunit.Abstractions;
@@ -77,7 +78,7 @@ public sealed class ProcessBuilderTests
     public void SetDomain(string domain)
     {
         SkipIfNotWindows();
-        
+
         using var process = ProcessBuilder.WithDomain(domain)
                                           .CreateProcess();
 
@@ -97,7 +98,7 @@ public sealed class ProcessBuilderTests
     public void UnsetDomain(string unsetValue)
     {
         SkipIfNotWindows();
-        
+
         using var process = ProcessBuilder.WithDomain("Foo")
                                           .WithDomain(unsetValue)
                                           .CreateProcess();
@@ -230,7 +231,7 @@ public sealed class ProcessBuilderTests
     public void SetLoadUserProfile(bool value)
     {
         SkipIfNotWindows();
-        
+
         using var process = ProcessBuilder.WithLoadUserProfile(value)
                                           .CreateProcess();
 
@@ -334,7 +335,7 @@ public sealed class ProcessBuilderTests
     public void SetPasswordInClearText(string password)
     {
         SkipIfNotWindows();
-        
+
         using var process = ProcessBuilder.WithPasswordInClearText(password)
                                           .CreateProcess();
 
@@ -355,7 +356,22 @@ public sealed class ProcessBuilderTests
         using var process2 = builderClone.CreateProcess();
 
         process1.StartInfo.Should().NotBeSameAs(process2.StartInfo);
-        process1.StartInfo.Should().BeEquivalentTo(process2.StartInfo);
+        process1.StartInfo.Should().BeEquivalentTo(process2.StartInfo, ConfigureStartInfoEquivalency);
+    }
+
+    private static EquivalencyAssertionOptions<ProcessStartInfo> ConfigureStartInfoEquivalency(EquivalencyAssertionOptions<ProcessStartInfo> options)
+    {
+#if NET6_0
+        if (OperatingSystem.IsWindows())
+            return options;
+#else
+        return options;
+#endif
+
+        return options.Excluding(startInfo => startInfo.Domain)
+                      .Excluding(startInfo => startInfo.Password)
+                      .Excluding(startInfo => startInfo.LoadUserProfile)
+                      .Excluding(startInfo => startInfo.PasswordInClearText);
     }
 
     public static TheoryData<string?> InvalidStrings { get; } =
