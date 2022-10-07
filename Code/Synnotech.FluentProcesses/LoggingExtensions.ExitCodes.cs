@@ -43,10 +43,10 @@ public static partial class LoggingExtensions
         LoggerMessage.Define<string, string, int>(LogLevel.Critical, 0, "Process \"{ProcessFile} {Arguments}\" exited with code {ExitCode}");
 
     private static void LogExitCode(this ILogger logger,
-                                   string processFileName,
-                                   string? arguments,
-                                   int exitCode,
-                                   LogLevel logLevel)
+                                    string processFileName,
+                                    string? arguments,
+                                    int exitCode,
+                                    LogLevel logLevel)
     {
         if (arguments.IsNullOrWhiteSpace())
             LogExitCodeWithoutArguments(logger, processFileName, exitCode, logLevel);

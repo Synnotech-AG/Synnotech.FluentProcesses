@@ -29,7 +29,7 @@ public readonly record struct StreamHandlers(DataReceivedEventHandler? StandardO
             process.StartInfo.RedirectStandardOutput = true;
             process.OutputDataReceived += StandardOutputHandler;
         }
-        
+
         if (StandardErrorHandler is not null)
         {
             process.StartInfo.RedirectStandardError = true;
