@@ -48,9 +48,7 @@ public static class Extensions
 
 #if NET6_0
         if (OperatingSystem.IsWindows())
-        {
             CopyWindowsSpecificProperties(processStartInfo, clone);
-        }
 #else
         CopyWindowsSpecificProperties(processStartInfo, clone);
 #endif

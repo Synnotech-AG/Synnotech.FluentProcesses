@@ -364,14 +364,14 @@ public sealed class ProcessBuilderTests
 #if NET6_0
         if (OperatingSystem.IsWindows())
             return options;
-#else
-        return options;
-#endif
-
+        
         return options.Excluding(startInfo => startInfo.Domain)
                       .Excluding(startInfo => startInfo.Password)
                       .Excluding(startInfo => startInfo.LoadUserProfile)
                       .Excluding(startInfo => startInfo.PasswordInClearText);
+#else
+        return options;
+#endif
     }
 
     public static TheoryData<string?> InvalidStrings { get; } =
