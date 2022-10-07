@@ -27,7 +27,7 @@ public static partial class LoggingExtensions
     /// <param name="loggingSettings">The settings describing how logging should be performed.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="process" /> is null.</exception>
     public static void EnableLoggingIfNecessary(this Process process,
-                                                   LoggingSettings loggingSettings)
+                                                LoggingSettings loggingSettings)
     {
         process.MustNotBeNull();
 
@@ -112,7 +112,7 @@ public static partial class LoggingExtensions
                            loggingSettings.InvalidExitCodeLogLevel;
         if (logLevel == LogLevel.None)
             return;
-        
+
         loggingSettings.GetLoggerOrThrow()
                        .LogExitCode(process.StartInfo.FileName,
                                     process.StartInfo.Arguments,

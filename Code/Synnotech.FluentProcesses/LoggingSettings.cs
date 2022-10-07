@@ -27,7 +27,7 @@ public readonly record struct LoggingSettings(ILogger? Logger,
 {
     /// <summary>
     /// Gets the value indicating whether the
-    /// Standard Output logging behavior is not <see cref="LoggingBehavior.NoLogging" />.  
+    /// Standard Output logging behavior is not <see cref="LoggingBehavior.NoLogging" />.
     /// </summary>
     public bool IsStandardOutputLoggingEnabled =>
         StandardOutputLoggingBehavior != LoggingBehavior.NoLogging;
@@ -38,23 +38,23 @@ public readonly record struct LoggingSettings(ILogger? Logger,
     /// </summary>
     public bool IsStandardErrorLoggingEnabled =>
         StandardErrorLoggingBehavior != LoggingBehavior.NoLogging;
-    
+
     /// <summary>
     /// Gets the value indicating whether
     /// the <see cref="ValidExitCodeLogLevel" /> is not <see cref="LogLevel.None" />.
     /// </summary>
     public bool IsExitCodeLoggingEnabled =>
         ValidExitCodeLogLevel != LogLevel.None || InvalidExitCodeLogLevel != LogLevel.None;
-    
+
     /// <summary>
     /// Gets the value indicating whether any logging
     /// behavior is enabled (i.e. at least one of the logging behavior
     /// enum values is not <see cref="LoggingBehavior.NoLogging" /> or
-    /// <see cref="ValidExitCodeLogLevel" /> is not <see cref="LogLevel.None"/>).
+    /// <see cref="ValidExitCodeLogLevel" /> is not <see cref="LogLevel.None" />).
     /// </summary>
     public bool IsLoggingEnabled =>
         IsStandardOutputLoggingEnabled || IsStandardErrorLoggingEnabled || IsExitCodeLoggingEnabled;
-    
+
     /// <summary>
     /// Gets the logger instance. If it is not set, an <see cref="InvalidOperationException" /> will be thrown.
     /// The latter case indicates that either this instance is not properly configured or that the calling code
@@ -65,7 +65,7 @@ public readonly record struct LoggingSettings(ILogger? Logger,
         Logger ?? throw CreateLoggerIsMissingException();
 
     /// <summary>
-    /// Checks if any logging behavior is enabled and validates that the logger is properly set. 
+    /// Checks if any logging behavior is enabled and validates that the logger is properly set.
     /// </summary>
     /// <returns>True if logging is enabled on either the Standard Output or Standard Error stream, else false.</returns>
     public bool CheckIfLoggingIsEnabled()
