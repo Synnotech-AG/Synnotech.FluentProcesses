@@ -37,6 +37,7 @@ public sealed class ProcessBuilder
     private bool WasEnvironmentVariableSet { get; set; }
     private LoggingSettings LoggingSettings { get; set; } = new (null);
     private int[]? ValidExitCodes { get; set; } = DefaultValidExitCodes;
+    private StreamHandlers StreamHandlers { get; set; }
 
     /// <summary>
     /// Adds a custom environment variable that the process can access when executed.
@@ -432,10 +433,73 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Adds the specified handler to the <see cref="Process.OutputDataReceived" /> event.
+    /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is null.</exception>
+    public ProcessBuilder AddOutputReceivedHandler(DataReceivedEventHandler handler)
+    {
+        handler.MustNotBeNull();
+        
+        StreamHandlers = StreamHandlers with { StandardOutputHandler = CombineHandlers(StreamHandlers.StandardOutputHandler, handler) };
+        return this;
+    }
+
+    /// <summary>
+    /// Removes the specified handler from the <see cref="Process.OutputDataReceived" /> event.
+    /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handlerToBeRemoved"/> is null.</exception>
+    public ProcessBuilder RemoveOutputReceivedHandler(DataReceivedEventHandler handlerToBeRemoved)
+    {
+        handlerToBeRemoved.MustNotBeNull();
+
+        StreamHandlers = StreamHandlers with { StandardOutputHandler = RemoveHandler(StreamHandlers.StandardOutputHandler, handlerToBeRemoved) };
+        return this;
+    }
+
+    /// <summary>
+    /// Adds the specified handler to the <see cref="Process.ErrorDataReceived" /> event.
+    /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is null.</exception>
+    public ProcessBuilder AddErrorReceivedHandler(DataReceivedEventHandler handler)
+    {
+        handler.MustNotBeNull();
+
+        StreamHandlers = StreamHandlers with { StandardErrorHandler = CombineHandlers(StreamHandlers.StandardErrorHandler, handler) };
+        return this;
+    }
+
+    /// <summary>
+    /// Removes the specified handler form the <see cref="Process.ErrorDataReceived" /> event.
+    /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handlerToBeRemoved"/> is null.</exception>
+    public ProcessBuilder RemoveErrorReceivedHandler(DataReceivedEventHandler handlerToBeRemoved)
+    {
+        handlerToBeRemoved.MustNotBeNull();
+
+        StreamHandlers = StreamHandlers with { StandardErrorHandler = RemoveHandler(StreamHandlers.StandardErrorHandler, handlerToBeRemoved) };
+        return this;
+    }
+    
+    private static DataReceivedEventHandler CombineHandlers(DataReceivedEventHandler? target, DataReceivedEventHandler newHandler)
+    {
+        target += newHandler;
+        return target;
+    }
+
+    private static DataReceivedEventHandler? RemoveHandler(DataReceivedEventHandler? source, DataReceivedEventHandler handlerToBeRemoved)
+    {
+        if (source is null)
+            return source;
+
+        source -= handlerToBeRemoved;
+        return source;
+    }
+
+    /// <summary>
     /// Creates the process instance using all information gathered by this builder instance.
     /// </summary>
     public FluentProcess CreateProcess() =>
-        new (new Process { StartInfo = ProcessStartInfo }, LoggingSettings, ValidExitCodes);
+        new (new Process { StartInfo = ProcessStartInfo }, LoggingSettings, ValidExitCodes, StreamHandlers);
 
     /// <summary>
     /// Creates a process instance out of the information attached to this process builder instance,
