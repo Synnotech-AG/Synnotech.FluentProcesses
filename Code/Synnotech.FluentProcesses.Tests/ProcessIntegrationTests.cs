@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
@@ -164,6 +166,38 @@ public sealed class ProcessIntegrationTests
                                            .RunProcess();
 
         actualExitCode.Should().Be(exitCode);
+    }
+
+    [Fact]
+    public void AttachCustomHandlers()
+    {
+        var capturedOutput = new List<string?>();
+        var capturedErrors = new List<string?>();
+
+        ProcessBuilder.AddOutputReceivedHandler((_, e) => capturedOutput.Add(e.Data))
+                      .AddErrorReceivedHandler((_, e) => capturedErrors.Add(e.Data))
+                      .RunProcess();
+
+        var expectedOutput = new[] { "Hello from Sample Console App", "Here is another message", null };
+        capturedOutput.Should().Equal(expectedOutput);
+        var expectedErrors = new[] { "Here is an error message", "Here are more errors", null };
+        capturedErrors.Should().Equal(expectedErrors);
+    }
+
+    [Fact]
+    public void RemoveHandlers()
+    {
+        var capturedData = new List<string?>();
+
+        ProcessBuilder.AddOutputReceivedHandler(Handler)
+                      .AddErrorReceivedHandler(Handler)
+                      .RemoveOutputReceivedHandler(Handler)
+                      .RemoveErrorReceivedHandler(Handler)
+                      .RunProcess();
+
+        capturedData.Should().BeEmpty();
+
+        void Handler(object _, DataReceivedEventArgs e) => capturedData.Add(e.Data);
     }
 
     private static string FindSolutionDirectory()

@@ -19,12 +19,17 @@ public sealed class FluentProcess : IDisposable
     /// <param name="actualProcess">The process instance that will be orchestrated.</param>
     /// <param name="loggingSettings">The settings object specifying how logging is handled.</param>
     /// <param name="validExitCodes">The array which contains all valid exit codes for the process.</param>
+    /// <param name="streamHandlers">The instance that encapsulates the optional handlers for standard output and standard error.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="actualProcess" /> is null.</exception>
-    public FluentProcess(Process actualProcess, LoggingSettings loggingSettings, int[]? validExitCodes = null)
+    public FluentProcess(Process actualProcess,
+                         LoggingSettings loggingSettings = default,
+                         int[]? validExitCodes = null,
+                         StreamHandlers streamHandlers = default)
     {
         ActualProcess = actualProcess.MustNotBeNull();
         LoggingSettings = loggingSettings;
         ValidExitCodes = validExitCodes;
+        StreamHandlers = streamHandlers;
     }
 
     /// <summary>
@@ -52,6 +57,11 @@ public sealed class FluentProcess : IDisposable
     /// </summary>
     public int[]? ValidExitCodes { get; }
 
+    /// <summary>
+    /// Gets the instance that encapsulates the optional handlers for standard output and standard error.
+    /// </summary>
+    public StreamHandlers StreamHandlers { get; }
+
     private bool WasStarted { get; set; }
 
     /// <summary>
@@ -75,16 +85,19 @@ public sealed class FluentProcess : IDisposable
     public void Start()
     {
         if (!WasStarted)
+        {
             ActualProcess.EnableLoggingIfNecessary(LoggingSettings);
+            StreamHandlers.AttachHandlersIfNecessary(ActualProcess);
+        }
 
         ActualProcess.Start();
 
         if (!WasStarted)
         {
-            if (LoggingSettings.StandardOutputLoggingBehavior == LoggingBehavior.LogOnEvent)
+            if (LoggingSettings.StandardOutputLoggingBehavior == LoggingBehavior.LogOnEvent || StreamHandlers.StandardOutputHandler is not null)
                 ActualProcess.BeginOutputReadLine();
 
-            if (LoggingSettings.StandardErrorLoggingBehavior == LoggingBehavior.LogOnEvent)
+            if (LoggingSettings.StandardErrorLoggingBehavior == LoggingBehavior.LogOnEvent || StreamHandlers.StandardErrorHandler is not null)
                 ActualProcess.BeginErrorReadLine();
         }
 
