@@ -12,11 +12,18 @@ namespace Synnotech.FluentProcesses;
 /// <param name="StandardErrorLoggingBehavior">The logging behavior that will be applied to the standard error stream.</param>
 /// <param name="StandardOutputLogLevel">The log level that is used when logging standard output messages.</param>
 /// <param name="StandardErrorLogLevel">The log level that is used when logging standard error messages.</param>
+/// <param name="ValidExitCodeLogLevel">
+/// The level which is used for logging a valid exit code of a process.
+/// This log level is also used to log the exit code if no exit code validation is configured.
+/// </param>
+/// <param name="InvalidExitCodeLogLevel">The level which is used for logging invalid exit codes.</param>
 public readonly record struct LoggingSettings(ILogger? Logger,
                                               LoggingBehavior StandardOutputLoggingBehavior = LoggingBehavior.NoLogging,
                                               LoggingBehavior StandardErrorLoggingBehavior = LoggingBehavior.NoLogging,
                                               LogLevel StandardOutputLogLevel = LogLevel.Information,
-                                              LogLevel StandardErrorLogLevel = LogLevel.Error)
+                                              LogLevel StandardErrorLogLevel = LogLevel.Error,
+                                              LogLevel ValidExitCodeLogLevel = LogLevel.None,
+                                              LogLevel InvalidExitCodeLogLevel = LogLevel.None)
 {
     /// <summary>
     /// Gets the value indicating whether the
@@ -33,12 +40,20 @@ public readonly record struct LoggingSettings(ILogger? Logger,
         StandardErrorLoggingBehavior != LoggingBehavior.NoLogging;
     
     /// <summary>
+    /// Gets the value indicating whether
+    /// the <see cref="ValidExitCodeLogLevel" /> is not <see cref="LogLevel.None" />.
+    /// </summary>
+    public bool IsExitCodeLoggingEnabled =>
+        ValidExitCodeLogLevel != LogLevel.None || InvalidExitCodeLogLevel != LogLevel.None;
+    
+    /// <summary>
     /// Gets the value indicating whether any logging
     /// behavior is enabled (i.e. at least one of the logging behavior
-    /// enum values is not <see cref="LoggingBehavior.NoLogging" />).
+    /// enum values is not <see cref="LoggingBehavior.NoLogging" /> or
+    /// <see cref="ValidExitCodeLogLevel" /> is not <see cref="LogLevel.None"/>).
     /// </summary>
     public bool IsLoggingEnabled =>
-        IsStandardOutputLoggingEnabled || IsStandardErrorLoggingEnabled;
+        IsStandardOutputLoggingEnabled || IsStandardErrorLoggingEnabled || IsExitCodeLoggingEnabled;
     
     /// <summary>
     /// Gets the logger instance. If it is not set, an <see cref="InvalidOperationException" /> will be thrown.

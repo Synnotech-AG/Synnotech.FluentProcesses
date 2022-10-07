@@ -394,26 +394,62 @@ public sealed class ProcessBuilder
     }
 
     /// <summary>
+    /// Sets the level which is used for logging a valid exit code of a process.
+    /// This log level is also used to log the exit code if no exit code validation is configured.
+    /// </summary>
+    public ProcessBuilder WithValidExitCodeLogLevel(LogLevel validExitCodeLogLevel)
+    {
+        LoggingSettings = LoggingSettings with { ValidExitCodeLogLevel = validExitCodeLogLevel };
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the level which is used for logging invalid exit codes.
+    /// You can call <see cref="WithValidExitCodes" /> to specify the
+    /// exit codes that are valid for the process. By default, only 0 is
+    /// considered a valid exit code.
+    /// </summary>
+    public ProcessBuilder WithInvalidExitCodeLogLevel(LogLevel invalidExitCodeLogLevel)
+    {
+        LoggingSettings = LoggingSettings with { InvalidExitCodeLogLevel = invalidExitCodeLogLevel };
+        return this;
+    }
+
+    /// <summary>
     /// Enables logging by setting the specified logger and setting the standard output and standard error
     /// logging behaviors to <see cref="LoggingBehavior.LogOnEvent" />.
     /// </summary>
     /// <param name="logger">The object used for logging.</param>
     /// <param name="standardOutputLogLevel">The level used for logging messages of the standard output stream.</param>
     /// <param name="standardErrorLogLevel">The level used for logging messages of the standard error stream.</param>
+    /// <param name="validExitCodeLogLevel">
+    /// The level used when logging a valid exit code.
+    /// This log level is also used to log the exit code if no exit code validation is configured.
+    /// </param>
+    /// <param name="invalidExitCodeLogLevel">
+    /// The level used when logging an invalid exit code.
+    /// You can call <see cref="WithValidExitCodes" /> to specify the
+    /// exit codes that are valid for the process. By default, only 0 is
+    /// considered a valid exit code.
+    /// </param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="logger" /> is null.</exception>
     public ProcessBuilder EnableLogging(ILogger logger,
                                         LogLevel standardOutputLogLevel = LogLevel.Information,
-                                        LogLevel standardErrorLogLevel = LogLevel.Error) =>
+                                        LogLevel standardErrorLogLevel = LogLevel.Error,
+                                        LogLevel validExitCodeLogLevel = LogLevel.Information,
+                                        LogLevel invalidExitCodeLogLevel = LogLevel.Error) =>
         WithLogger(logger.MustNotBeNull())
            .WithStandardOutputLogging()
            .WithStandardErrorLogging()
            .WithStandardOutputLogLevel(standardOutputLogLevel)
-           .WithStandardErrorLogLevel(standardErrorLogLevel);
+           .WithStandardErrorLogLevel(standardErrorLogLevel)
+           .WithValidExitCodeLogLevel(validExitCodeLogLevel)
+           .WithInvalidExitCodeLogLevel(invalidExitCodeLogLevel);
 
     /// <summary>
     /// Sets the exit codes that are valid for the process. By default, FluentProcesses checks
     /// if the exit code is 0.
-    /// The exit code of a process will be validated when <see cref="FluentProcess.VerifyExitCodeIfNecessary" />
+    /// The exit code of a process will be validated when <see cref="FluentProcess.VerifyAndLogAfterExit" />
     /// is called. This is automatically done when calling RunProcess(Async).
     /// </summary>
     public ProcessBuilder WithValidExitCodes(params int[] validExitCodes)
@@ -435,11 +471,11 @@ public sealed class ProcessBuilder
     /// <summary>
     /// Adds the specified handler to the <see cref="Process.OutputDataReceived" /> event.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler" /> is null.</exception>
     public ProcessBuilder AddOutputReceivedHandler(DataReceivedEventHandler handler)
     {
         handler.MustNotBeNull();
-        
+
         StreamHandlers = StreamHandlers with { StandardOutputHandler = CombineHandlers(StreamHandlers.StandardOutputHandler, handler) };
         return this;
     }
@@ -447,7 +483,7 @@ public sealed class ProcessBuilder
     /// <summary>
     /// Removes the specified handler from the <see cref="Process.OutputDataReceived" /> event.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handlerToBeRemoved"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handlerToBeRemoved" /> is null.</exception>
     public ProcessBuilder RemoveOutputReceivedHandler(DataReceivedEventHandler handlerToBeRemoved)
     {
         handlerToBeRemoved.MustNotBeNull();
@@ -459,7 +495,7 @@ public sealed class ProcessBuilder
     /// <summary>
     /// Adds the specified handler to the <see cref="Process.ErrorDataReceived" /> event.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handler" /> is null.</exception>
     public ProcessBuilder AddErrorReceivedHandler(DataReceivedEventHandler handler)
     {
         handler.MustNotBeNull();
@@ -471,7 +507,7 @@ public sealed class ProcessBuilder
     /// <summary>
     /// Removes the specified handler form the <see cref="Process.ErrorDataReceived" /> event.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handlerToBeRemoved"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="handlerToBeRemoved" /> is null.</exception>
     public ProcessBuilder RemoveErrorReceivedHandler(DataReceivedEventHandler handlerToBeRemoved)
     {
         handlerToBeRemoved.MustNotBeNull();
@@ -479,7 +515,7 @@ public sealed class ProcessBuilder
         StreamHandlers = StreamHandlers with { StandardErrorHandler = RemoveHandler(StreamHandlers.StandardErrorHandler, handlerToBeRemoved) };
         return this;
     }
-    
+
     private static DataReceivedEventHandler CombineHandlers(DataReceivedEventHandler? target, DataReceivedEventHandler newHandler)
     {
         target += newHandler;
@@ -511,7 +547,7 @@ public sealed class ProcessBuilder
         using var process = CreateProcess();
         process.Start();
         process.WaitForExit();
-        process.VerifyExitCodeIfNecessary();
+        process.VerifyAndLogAfterExit();
         return process.ExitCode;
     }
 
@@ -527,7 +563,7 @@ public sealed class ProcessBuilder
         using var process = CreateProcess();
         process.Start();
         await process.WaitForExitAsync(cancellationToken);
-        process.VerifyExitCodeIfNecessary();
+        process.VerifyAndLogAfterExit();
         return process.ExitCode;
     }
 #endif
