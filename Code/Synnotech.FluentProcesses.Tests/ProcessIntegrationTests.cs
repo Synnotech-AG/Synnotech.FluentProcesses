@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using Light.GuardClauses;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,21 +16,27 @@ namespace Synnotech.FluentProcesses.Tests;
 
 public sealed class ProcessIntegrationTests
 {
-    public ProcessIntegrationTests(ITestOutputHelper output)
+    static ProcessIntegrationTests()
     {
         var solutionDirectory = FindSolutionDirectory();
-        var exePath = Path.Combine(solutionDirectory,
-                                   "SampleConsoleApp",
-                                   "bin",
-                                   Constants.BuildConfiguration,
-                                   "net6.0",
-                                   Constants.SampleConsoleAppExe);
+        ExePath = Path.Combine(solutionDirectory,
+                               "SampleConsoleApp",
+                               "bin",
+                               Constants.BuildConfiguration,
+                               "net6.0",
+                               Constants.SampleConsoleAppExe);
+    }
+
+    public ProcessIntegrationTests(ITestOutputHelper output)
+    {
         Logger = new LoggerMock(output: output);
-        ProcessBuilder = new ProcessBuilder().WithFileName(exePath)
+        ProcessBuilder = new ProcessBuilder().WithFileName(ExePath)
                                              .WithCreateNoWindow()
                                              .DisableShellExecute()
                                              .EnableLogging(Logger);
     }
+
+    private static string ExePath { get; }
 
     private LoggerMock Logger { get; }
     private ProcessBuilder ProcessBuilder { get; }
@@ -37,11 +44,12 @@ public sealed class ProcessIntegrationTests
     [Fact]
     public void ExecuteProcessAndLog()
     {
-        var exitCode = ProcessBuilder.WithArguments("--delayInterval 100")
+        const string arguments = "--delayInterval 100";
+        var exitCode = ProcessBuilder.WithArguments(arguments)
                                      .RunProcess();
 
         exitCode.Should().Be(0);
-        CheckDefaultLoggingMessages();
+        CheckDefaultLoggingMessages(arguments, exitCode);
     }
 
 #if NET6_0
@@ -51,7 +59,7 @@ public sealed class ProcessIntegrationTests
         var exitCode = await ProcessBuilder.RunProcessAsync();
 
         exitCode.Should().Be(0);
-        CheckDefaultLoggingMessages();
+        CheckDefaultLoggingMessages(null, exitCode);
     }
 #endif
 
@@ -70,34 +78,63 @@ public sealed class ProcessIntegrationTests
     }
 
     [Theory]
-    [InlineData(LogLevel.Trace, LogLevel.Warning)]
-    [InlineData(LogLevel.Debug, LogLevel.Critical)]
-    public void ChangeLogLevels(LogLevel standardOutputLogLevel, LogLevel standardErrorLogLevel)
+    [InlineData(LogLevel.Trace, LogLevel.Warning, LogLevel.Debug, LogLevel.Error, 0)]
+    [InlineData(LogLevel.Debug, LogLevel.Critical, LogLevel.Information, LogLevel.Critical, 42)]
+    [InlineData(LogLevel.Debug, LogLevel.Critical, LogLevel.Debug, LogLevel.Error, 0)]
+    [InlineData(LogLevel.Information, LogLevel.Warning, LogLevel.Trace, LogLevel.Warning, 42)]
+    public void ChangeLogLevels(LogLevel standardOutputLogLevel,
+                                LogLevel standardErrorLogLevel,
+                                LogLevel validExitCodeLevel,
+                                LogLevel invalidExitCodeLevel,
+                                int exitCode)
     {
+        var arguments = "--exitCode " + exitCode;
         ProcessBuilder.WithStandardOutputLogLevel(standardOutputLogLevel)
                       .WithStandardErrorLogLevel(standardErrorLogLevel)
-                      .RunProcess();
+                      .WithValidExitCodeLogLevel(validExitCodeLevel)
+                      .WithInvalidExitCodeLogLevel(invalidExitCodeLevel)
+                      .WithArguments(arguments);
+        
+        var act = () => ProcessBuilder.RunProcess();
 
+        var isInvalidExitCode = exitCode != 0;
+        if (isInvalidExitCode)
+            act.Should().Throw<InvalidExitCodeException>();
+        else
+            act.Should().NotThrow();
+        var exitCodeMessage = CreateExitCodeMessage(arguments, exitCode);
+        var exitCodeLogLevel = isInvalidExitCode ? invalidExitCodeLevel : validExitCodeLevel;
         var expectedMessage = new LogMessage[]
         {
             new (standardOutputLogLevel, "Hello from Sample Console App"),
             new (standardOutputLogLevel, "Here is another message"),
             new (standardErrorLogLevel, "Here is an error message"),
             new (standardErrorLogLevel, "Here are more errors"),
+            new (exitCodeLogLevel, exitCodeMessage)
         };
         Logger.CapturedMessages.Should().Equal(expectedMessage);
     }
 
-    private void CheckDefaultLoggingMessages()
+    private void CheckDefaultLoggingMessages(string? arguments, int exitCode)
     {
+        var exitCodeMessage = CreateExitCodeMessage(arguments, exitCode);
         var expectedMessages = new LogMessage[]
         {
             new (LogLevel.Information, "Hello from Sample Console App"),
             new (LogLevel.Information, "Here is another message"),
             new (LogLevel.Error, "Here is an error message"),
             new (LogLevel.Error, "Here are more errors"),
+            new (LogLevel.Information, exitCodeMessage)
         };
         Logger.CapturedMessages.Should().Equal(expectedMessages);
+    }
+
+    private static string CreateExitCodeMessage(string? arguments, int exitCode)
+    {
+        var exitCodeMessage = arguments.IsNullOrWhiteSpace() ?
+                                  $"Process \"{ExePath}\" exited with code {exitCode}" :
+                                  $"Process \"{ExePath} {arguments}\" exited with code {exitCode}";
+        return exitCodeMessage;
     }
 
 #if NET6_0

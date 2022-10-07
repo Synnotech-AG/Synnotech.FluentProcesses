@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Light.GuardClauses;
@@ -154,24 +155,40 @@ public sealed class FluentProcess : IDisposable
 #endif
 
     /// <summary>
+    /// <para>
     /// Checks if the exit code of the <see cref="ActualProcess" /> is valid.
+    /// Also performs logging after exit if necessary.
+    /// </para>
+    /// <para>
     /// If <see cref="ValidExitCodes" /> is null, then no check will be performed.
     /// Otherwise, if the array does not contain the exit code of the process,
+    /// an <see cref="InvalidExitCodeException" /> will be thrown.
+    /// </para>
     /// </summary>
     /// <exception cref="InvalidExitCodeException">Thrown when the exit code of this process is not one of the <see cref="ValidExitCodes" />.</exception>
-    public void VerifyExitCodeIfNecessary()
+    public void VerifyAndLogAfterExit()
     {
-        if (ValidExitCodes.IsNullOrEmpty())
-            return;
+        ActualProcess.LogAfterExitIfNecessary(LoggingSettings);
 
-        var exitCode = ExitCode;
-        var validExitCodes = ValidExitCodes;
+        var exitCode = ActualProcess.ExitCode;
+        var isExitCodeConsideredValid = CheckIfExitCodeIsConsideredValid(exitCode, ValidExitCodes);
+        ActualProcess.LogExitCodeIfNecessary(LoggingSettings, isExitCodeConsideredValid);
+
+        if (!isExitCodeConsideredValid)
+            throw new InvalidExitCodeException(this, ValidExitCodes!, $"Process \"{StartInfo.FileName} {StartInfo.Arguments}\" exited with invalid code {exitCode}.");
+    }
+
+    private static bool CheckIfExitCodeIsConsideredValid(int exitCode, [NotNullWhen(false)] int[]? validExitCodes)
+    {
+        if (validExitCodes.IsNullOrEmpty())
+            return true;
+
         for (var i = 0; i < validExitCodes.Length; i++)
         {
             if (validExitCodes[i] == exitCode)
-                return;
+                return true;
         }
 
-        throw new InvalidExitCodeException(this, validExitCodes, $"Process \"{StartInfo.FileName} {StartInfo.Arguments}\" exited with invalid code {exitCode}.");
+        return false;
     }
 }
