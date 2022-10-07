@@ -541,9 +541,19 @@ public sealed class ProcessBuilder
     /// Creates a process instance out of the information attached to this process builder instance,
     /// starts it and waits for exit. Afterwards, the process is disposed.
     /// </summary>
+    /// <param name="fileName">
+    /// The path to the process that you want to start (optional). <see cref="WithFileName" /> will
+    /// be called internally when this parameter is set.
+    /// </param>
+    /// <param name="arguments">
+    /// The arguments that will be passed to the target process (optional). <see cref="WithArguments" /> will
+    /// be called internally when this parameter is set.
+    /// </param>
     /// <returns>The exit code of the process.</returns>
-    public int RunProcess()
+    public int RunProcess(string fileName = "", string arguments = "")
     {
+        SetFileNameAndArgumentsIfNecessary(fileName, arguments);
+
         using var process = CreateProcess();
         process.Start();
         process.WaitForExit();
@@ -558,8 +568,39 @@ public sealed class ProcessBuilder
     /// </summary>
     /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
     /// <returns>The exit code of the process.</returns>
-    public async Task<int> RunProcessAsync(CancellationToken cancellationToken = default)
+    public Task<int> RunProcessAsync(CancellationToken cancellationToken = default) =>
+        RunProcessAsync(string.Empty, string.Empty, cancellationToken);
+    
+    /// <summary>
+    /// Creates a process instance out of the information attached to this process builder instance,
+    /// starts it and waits for exit asynchronously. Afterwards, the process is disposed.
+    /// </summary>
+    /// <param name="fileName">
+    /// The path to the process that you want to start (optional). <see cref="WithFileName" /> will
+    /// be called internally when this parameter is set.
+    /// </param>
+    /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+    /// <returns>The exit code of the process.</returns>
+    public Task<int> RunProcessAsync(string fileName, CancellationToken cancellationToken = default) =>
+        RunProcessAsync(fileName, string.Empty, cancellationToken);
+
+    /// <summary>
+    /// Creates a process instance out of the information attached to this process builder instance,
+    /// starts it and waits for exit asynchronously. Afterwards, the process is disposed.
+    /// </summary>
+    /// <param name="fileName">
+    /// The path to the process that you want to start (optional). <see cref="WithFileName" /> will
+    /// be called internally when this parameter is set.
+    /// </param>
+    /// <param name="arguments">
+    /// The arguments that will be passed to the target process (optional). <see cref="WithArguments" /> will
+    /// be called internally when this parameter is set.
+    /// </param>
+    /// <param name="cancellationToken">An optional token to cancel the asynchronous operation.</param>
+    /// <returns>The exit code of the process.</returns>
+    public async Task<int> RunProcessAsync(string fileName, string arguments, CancellationToken cancellationToken = default)
     {
+        SetFileNameAndArgumentsIfNecessary(fileName, arguments);
         using var process = CreateProcess();
         process.Start();
         await process.WaitForExitAsync(cancellationToken);
@@ -567,4 +608,12 @@ public sealed class ProcessBuilder
         return process.ExitCode;
     }
 #endif
+    
+    private void SetFileNameAndArgumentsIfNecessary(string fileName, string arguments)
+    {
+        if (!fileName.IsNullOrWhiteSpace())
+            WithFileName(fileName);
+        if (!arguments.IsNullOrWhiteSpace())
+            WithArguments(arguments);
+    }
 }
