@@ -2,9 +2,11 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Light.GuardClauses;
+#if NET6_0
 using System.Threading;
 using System.Threading.Tasks;
-using Light.GuardClauses;
+#endif
 
 namespace Synnotech.FluentProcesses;
 
