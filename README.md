@@ -51,15 +51,16 @@ The `ProcessStartInfo` class is the main way to configure a process in .NET. The
 
 ```csharp
 // Consider this code to be used in a .NET Framework app on Windows
-new ProcessBuilder()
-    .WithFileName(@"C:\Tools\MyCADApp.exe")
-    .WithArguments("--openFile plan.cad")
-    .WithUseShellExecute(false) // this is the same as DisableShellExecute()
-    .WithWindowStyle(ProcessWindowStyle.Maximized)
-    .WithLoadUserProfile()
-    .WithErrorDialog()
-    .AddEnvironmentVariable("CAD_DefaultUnit", "mm")
-    .RunProcess();
+int exitCode =
+    new ProcessBuilder()
+        .WithFileName(@"C:\Tools\MyCADApp.exe")
+        .WithArguments("--openFile plan.cad")
+        .WithUseShellExecute(false) // this is the same as DisableShellExecute()
+        .WithWindowStyle(ProcessWindowStyle.Maximized)
+        .WithLoadUserProfile()
+        .WithErrorDialog()
+        .AddEnvironmentVariable("CAD_DefaultUnit", "mm")
+        .RunProcess();
 ```
 
 As you can see, some methods of the Fluent API are only applicable on Windows. In .NET 6, **Synnotech.FluentProcesses** uses the `SupportedOSPlatformAttribute` on the corresponding methods to warn you about inappropriate calls.
@@ -115,6 +116,30 @@ private void HandleData(object sender, DataReceivedEventArgs e)
 You do not need to call `WithRedirectStandardOutput` and `WithRedirectStandardError` in this case, the corresponding values are set automatically for you.
 
 If you also enabled logging, the logging handler on these events will always execute first before your custom handler is called.
+
+## Create ProcessBuilder Copies to Avoid Code Duplication
+
+You need to call several processes in the same project and some settings are the same for all these calls? You can avoid code duplication in these scenarios by calling `ProcessBuilder.Clone`:
+
+```csharp
+var firstProcessBuilder =
+    new ProcessBuilder()
+        .DisableShellExecute()
+        .WithCreateNoWindow()
+        .AddEnvironmentVariable("CI", "True");
+        
+// The following instruction will create a deep clone
+// of the firstProcessBuilder
+var secondProcessBuilder = firstProcessBuilder.Clone();
+
+firstProcessBuilder
+    .AddEnvironmentVariable("Environment", "Staging")
+    .RunProcess("./SubFolder/app1.exe");
+
+secondProcessBuilder.RunProcess("./SubFolder/app2.exe");
+```
+
+In the above example, some properties are configured on the firstProcessBuilder. Then, `Clone` is called to create a deep copy of the `ProcessBuilder` which also implies creating a deep copy of the internal `ProcessStartInfo` instance (there also is a handy public `Clone` extension method for `ProcessStartInfo` if you need to use it in other contexts). This way, the environment variable "Environment = Staging" which is set after `Clone` only affects the first process builder, but not the second one.
 
 ## What happens on RunProcess?
 
