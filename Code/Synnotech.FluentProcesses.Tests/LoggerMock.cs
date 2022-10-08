@@ -24,7 +24,7 @@ public sealed class LoggerMock : ILogger
                             Func<TState, Exception?, string> formatter)
     {
         var message = formatter(state, exception);
-        CapturedMessages.Add(new (logLevel, message, eventId));
+        CapturedMessages.Add(new (logLevel, message));
         Output?.WriteLine($"{message} ({logLevel})");
     }
 

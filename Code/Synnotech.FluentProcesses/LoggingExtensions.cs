@@ -10,6 +10,13 @@ namespace Synnotech.FluentProcesses;
 /// </summary>
 public static partial class LoggingExtensions
 {
+    [LoggerMessage(EventId = 91900,
+                   EventName = "Synnotech.FluentProcesses - Log Received Process Data",
+                   Message = "{Message}")]
+    private static partial void LogReceivedData(this ILogger logger,
+                                                string message,
+                                                LogLevel logLevel);
+    
     /// <summary>
     /// <para>
     /// Enables logging on the specified <see cref="Process" /> instance according
