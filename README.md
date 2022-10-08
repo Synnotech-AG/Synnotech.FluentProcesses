@@ -95,7 +95,7 @@ ProcessBuilder.WithValidExitCodes(0, 3020);
 
 You can specify one or more valid exit codes in this case. If the called process won't return a valid exit code, an `InvalidExitCodeException` will be thrown when you call `ProcessBuilder.RunProcess`, `ProcessBuilder.RunProcessAsync`, or `FluentProcess.VerifyAndLogAfterExit`.
 
-If you don't want automatic checks of exit codes, then simply disable them by calling `ProcessBuilder.DisableExitCodeVerification()`.
+If you don't want automatic checks of exit codes to happen, then simply disable them by calling `ProcessBuilder.DisableExitCodeVerification()`.
 
 ## Handle Standard Output and Standard Error Yourself
 
@@ -170,4 +170,4 @@ First of all, the optional `fileName` and `arguments` values will be set if nece
 
 The process is then started and the builder waits for the process to exit. After that, `VerifyAndLogAfterExit` is called which logs the standard output and standard error if `LoggingBehavior.LogAfterProcessExit` was specified, and to perform exit code verification and logging.
 
-And that's it! If you want to learn more about the internals, simply check out the source code. **Synnotech.FluentProcesses** also provides the PDB files on NuGet so that you can directly debug into its source code in your IDE.
+And that's it! If you want to learn more about the internals, simply check out the source code. **Synnotech.FluentProcesses** also provides the PDB files on NuGet (.snupkg) so that you can directly debug into its source code in your IDE. Check out this [article](https://devblogs.microsoft.com/nuget/improved-package-debugging-experience-with-the-nuget-org-symbol-server/) that shows you how to setup Visual Studio to consume .snupkg files from nuget.org.
