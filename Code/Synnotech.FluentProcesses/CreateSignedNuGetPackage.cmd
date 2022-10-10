@@ -1,0 +1,1 @@
+dotnet pack Synnotech.FluentProcesses.csproj --configuration Release /p:SignAssembly=true /p:AssemblyOriginatorKeyFile=bin/Synnotech.FluentProcesses.snk /p:ContinuousIntegrationBuild=true

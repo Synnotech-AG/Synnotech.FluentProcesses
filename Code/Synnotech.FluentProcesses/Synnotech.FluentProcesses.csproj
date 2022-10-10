@@ -22,9 +22,11 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReleaseNotes>
-            Synntech.FluentProcesses 0.1.0
-            --------------------------------
-            - read all docs at: https://github.com/Synnotech-AG/Synnotech.FluentProcesses
+Synntech.FluentProcesses 0.1.0
+--------------------------------
+
+- initial release
+- read all docs at: https://github.com/Synnotech-AG/Synnotech.FluentProcesses
         </PackageReleaseNotes>
     </PropertyGroup>
 
