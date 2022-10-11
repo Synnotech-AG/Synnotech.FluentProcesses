@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Light.GuardClauses;
 
 namespace Synnotech.FluentProcesses;
@@ -50,7 +51,8 @@ public static class Extensions
         if (OperatingSystem.IsWindows())
             CopyWindowsSpecificProperties(processStartInfo, clone);
 #else
-        CopyWindowsSpecificProperties(processStartInfo, clone);
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            CopyWindowsSpecificProperties(processStartInfo, clone);
 #endif
 
         if (!copyEnvironment)
