@@ -7,7 +7,7 @@
         <Authors>Synnotech AG</Authors>
         <Company>Synnotech AG</Company>
         <Copyright>Copyright © Synnotech AG 2022</Copyright>
-        <Version>0.1.0</Version>
+        <Version>1.0.0</Version>
         <Description>A lightweight .NET library that makes using the System.Diagnostics.Process class easy.</Description>
         <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
         <IsPackable>true</IsPackable>
@@ -22,10 +22,10 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReleaseNotes>
-Synntech.FluentProcesses 0.1.0
+Synntech.FluentProcesses 1.0.0
 --------------------------------
 
-- initial release
+- introduced OS platform check for Windows-specific properties when cloning a ProcessStartInfo instance in .NET Standard 2.0
 - read all docs at: https://github.com/Synnotech-AG/Synnotech.FluentProcesses
         </PackageReleaseNotes>
     </PropertyGroup>
